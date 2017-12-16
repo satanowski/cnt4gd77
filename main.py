@@ -24,15 +24,16 @@ License: GNU AGPLv3
 """
 
 from collections import namedtuple
+from itertools import product
 
 from requests import get
-from flask import Flask, Response
+from flask import Flask, Response, render_template, request
 
 URL = "http://dmr.ham-digital.net/user_by_call.php?id=260"
 
 DmrRecord = namedtuple("DMRrec", "num,callsign,dmrid,name,country,ctry")
 
-PREFIXY = ("HF", "SN", "SO", "SP", "SQ", "3Z")
+PREFIXY = "HF,SN,SO,SP,SQ,3Z"
 
 IMPORTANT_TGS = [
     ('DMR Global', 1),
@@ -66,9 +67,14 @@ def get_records(url):
         yield DmrRecord(*items)
 
 
-def sieve(records, prefixy):
+def sieve(records, query):
     """Filter by given prefixes."""
-    return filter(lambda r: r.callsign[0:2] in prefixy, records)
+    query = query.split(',')
+    prefixes = list(filter(str.isalpha, query))
+    areas = list(filter(str.isdigit, query)) or range(1, 10)
+    selected = list(map(lambda x: x[0]+x[1], product(prefixes, areas)))
+    print("DEBUG:", selected)
+    return filter(lambda r: r.callsign[0:3] in selected, records)
 
 
 def save4gd77(records):
@@ -97,10 +103,18 @@ def save4gd77(records):
     return buf
 
 
+
 @app.route("/", methods=["GET"])
 def index():
+    """Serve the main page."""
+    return render_template('index.html')
+
+
+@app.route("/csv", methods=["GET"])
+def get_csv_file():
     """Serve the file."""
-    recs = sieve(get_records(URL), PREFIXY)
+    query = request.args.get('q') or PREFIXY
+    recs = sieve(get_records(URL), query)
     recs_sorted = sorted(recs, key=lambda r: r.callsign[2:])
     buf = save4gd77(recs_sorted)
     return Response(
