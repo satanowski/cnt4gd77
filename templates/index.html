@@ -1,112 +1,305 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Kontakty dla GD-77</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.6.1/css/bulma.min.css">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>Kontakty dla GD-77</title>
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.6.1/css/bulma.min.css">
+
+		<!--[if lte IE 9]>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/es5-shim/4.1.10/es5-shim.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/json3/3.3.2/json3.min.js"></script>
+		<![endif]-->
+		<script src="https://rawgit.com/kawanet/msgpack-lite/master/dist/msgpack.min.js"></script>
 
 		<style>
-			.gap {
-				margin-bottom: 100px;
-			}	
+ 			.gap {margin-bottom: 50px;}
+			.top_gap {margin-top: 40px;}
+			.kol1 { background-color: #074358; color:white;}
+			.kol2 { background-color: #458985; color:white;}
+			.kol3 { background-color: #D7D6A5;}
+			.kol4 { background-color: #DBA67B;}
+			.kol5 { background-color: #A55C55; color:white;}
+			.kol6 { background-color: #424e56; color:white;}
+			.right_bottom {bottom:20px; right:30px; position:absolute;
+			}
 		</style>
-  </head>
-  <body>
-  <section class="section">
-    <div class="container has-text-centered">
+	</head>
+	<body>
+		<section class="section">
 
-			<section class="hero is-primary is-bold is-info">
-  			<div class="hero-body">
-    			<div class="container">
-      			<h1 class="title">Generator listy kontaktów dla radia GD-77</h1>
-      			<h2 class="subtitle">na bazie danych z <a href="http://ham-digital.net">http://ham-digital.net</a></h2>
-    			</div>
-  			</div>
-			</section>
-
-			<section class="section">
-					<h2 class="title">Prefixy</h2>
-				<div class="container">
-					<div class="buttons is-centered">
-						<a class="button is-dark is-outlined tog"><span class="icon"><i class="fa fa-id-card-o"></i></span><span>SP</span></a>
-						<a class="button is-dark is-outlined tog"><span class="icon"><i class="fa fa-id-card-o"></i></span><span>SQ</span></a>
-						<a class="button is-dark is-outlined tog"><span class="icon"><i class="fa fa-id-card-o"></i></span><span>SO</span></a>
-						<a class="button is-dark is-outlined tog"><span class="icon"><i class="fa fa-id-card-o"></i></span><span>SN</span></a>
-						<a class="button is-dark is-outlined tog"><span class="icon"><i class="fa fa-id-card-o"></i></span><span>HF</span></a>
-						<a class="button is-dark is-outlined tog"><span class="icon"><i class="fa fa-id-card-o"></i></span><span>3Z</span></a>
+			<div class="container has-text-centered">
+				<section class="hero is-primary is-bold gap">
+					<div class="hero-body kol1">
+						<div class="container">
+							<h1 class="title">Generator listy kontaktów dla radia GD-77</h1>
+							<h2 class="subtitle">na bazie danych z <a href="http://ham-digital.net">http://ham-digital.net</a></h2>
+						</div>
 					</div>
-				</div> <!-- /container -->
-			</section>
+				</section>
 
-			<section class="section">
-					<h2 class="title">Okręgi</h2>
-				<div class="container">
-					<div class="buttons is-centered">
-						<a class="button is-dark is-outlined tog"><span class="icon"><i class="fa fa-circle-o"></i></span><span>1</span></a>
-						<a class="button is-dark is-outlined tog"><span class="icon"><i class="fa fa-circle-o"></i></span><span>2</span></a>
-						<a class="button is-dark is-outlined tog"><span class="icon"><i class="fa fa-circle-o"></i></span><span>3</span></a>
-						<a class="button is-dark is-outlined tog"><span class="icon"><i class="fa fa-circle-o"></i></span><span>4</span></a>
-						<a class="button is-dark is-outlined tog"><span class="icon"><i class="fa fa-circle-o"></i></span><span>5</span></a>
-						<a class="button is-dark is-outlined tog"><span class="icon"><i class="fa fa-circle-o"></i></span><span>6</span></a>
-						<a class="button is-dark is-outlined tog"><span class="icon"><i class="fa fa-circle-o"></i></span><span>7</span></a>
-						<a class="button is-dark is-outlined tog"><span class="icon"><i class="fa fa-circle-o"></i></span><span>8</span></a>
-						<a class="button is-dark is-outlined tog"><span class="icon"><i class="fa fa-circle-o"></i></span><span>9</span></a>
+				<div class="tile is-ancestor">
+					<div class="tile is-parent">
+						<article class="tile is-child notification kol2">
+							<p class="title">Dodatkowe kontakty</p>
+							<div class="content" id="additionals">
+							{% for contact in additionals %}
+								<div class="box">
+								  <article class="media">
+								    <div class="media-content">
+								      <div class="content">
+								        <p>
+													<label class="checkbox">
+														<input type="checkbox" value="{{contact.id}}">&nbsp;<strong>{{ contact.name|safe }}</strong>
+													</label>
+													<br>
+													{{ contact.description|safe }}
+        								</p>
+											</div>
+										</div>
+									</article>
+								</div>
+							{% endfor %}
+
+							{% if talkgroups %}	
+								<div class="box">
+								  <article class="media">
+								    <div class="media-content">
+								      <div class="content">
+								        <p>
+													<label class="checkbox">
+														<strong>{{talkgroups['name']}}</strong>
+													</label>
+													<br>
+													{{ talkgroups['description']|safe}}
+													<div class="select is-multiple" style="width:100%">
+													  <select multiple size="3" style="width:100%" id="talkgroups">
+														{% for tg in talkgroups['items'] %}
+															<option value="{{tg['id']}}">{{tg['name']}} ⇆ {{tg['id']}}</option>
+														{% endfor %}
+														</select>
+													</div>
+        								</p>
+											</div>
+										</div>
+									</article>
+								</div>
+							{% endif %}
+
+							</div>
+						</article>
 					</div>
-				</div> <!-- /container -->
-			</section>
 
-			<section class="section">
-				<div class="container">
-					<a id="submit" class="button is-success is-large"><span class="icon"><i class="fa fa-cog"></i></span><span>Generuj!</span></a>
-				</div> <!-- /container -->
-			</section>
+					<div class="tile is-vertical is-8">
+						<div class="tile">
+							<div class="tile is-parent is-vertical">
+								<article class="tile is-child notification kol3">
+									<p class="title">Prefixy</p>
+									<p class="subtitle">Wybierz prefixy znaków</p>
+									<div class="buttons is-centered top_gap">
+										<div class="buttons has-addons">
+										{% for o in prefixy %}
+  										<span class="button is-capitalized sp_pref">{{o}}</span>
+										{% endfor %}
+										</div>
+									</div>
+								</article>
+								
+								<article class="tile is-child notification kol4">
+									<p class="title">Okręgi</p>
+									<p class="subtitle">Wybierz okręgi wywoławcze</p>
+									<div class="buttons is-centered top_gap">
+										<div class="buttons has-addons">
+										{% for i in range(1, 10) %}
+  										<span class="button sp_area">{{i}}</span>
+										{% endfor %}
+										</div>
+									</div>
+								</article>
+
+								
+								<article class="tile is-child notification kol5">
+									<p class="title">Opcje</p>
+									<div class="field has-text-left">
+	  								<label class="label">Kontakty priorytetowe</label>
+  									<div class="control has-icons-left">
+    									<input class="input" id="priocals" type="text" placeholder="znaki wywoławcze lub identyfikatory DMR" value="">
+    									<span class="icon is-small is-left"><i class="fa fa-user"></i></span>
+									 	</div>
+  									<p class="help is-dark">
+											<label class="checkbox"><input type="checkbox" id="priosave">&nbsp;Zapamiętaj</label>
+										</p>
+									</div>
 
 
 
-			<footer class="footer">
-  			<div class="container">
-    			<div class="content has-text-centered">
-			      <p>2017 © satanowski</p>
-			    </div>
-			  </div>
-			</footer>
-			
-    </div>
-  </section>
+									<div class="field has-text-left">
+	  								<label class="label">Lista kontaktów</label>
+  									<p class="k">
+											<label class="checkbox"><input type="checkbox" disabled id="channels">&nbsp;Generuj listę kanałów (jeszcze nie skończone)</label>
+										</p>
+									</div>
 
-	<script>
-		var buttons = Array.from(document.getElementsByClassName("tog"));
-		var send = document.getElementById("submit");
 
-		buttons.forEach(function(button){
-			button.addEventListener("click", function() {
-				if (this.classList.contains("is-outlined")) {
-					this.classList.remove("is-outlined");
+									<div class="level is-pulled-right right-bottom">
+										<div class="level-right">
+  	  								<p class="level-item"><a class="button is-dark" id="submit">Generuj!</a></p>
+									  </div>
+									</div>
+								</article>
+
+							</div>
+							
+							<div class="tile is-parent">
+								<article class="tile is-child notification kol6">
+									<p class="title">Komentarze</p>
+									<div class="content" id="disqus_thread"></div>
+								</article>
+							</div>
+
+						</div>
+					</div>
+				</div>
+
+				<div class="tile is-ancestor">
+					<div class="tile is-parent">
+					</div>
+				</div>
+
+
+				<footer class="footer">
+					<div class="container">
+						<div class="content has-text-centered">
+							<p>2017 © sp5drs</p>
+						</div>
+					</div>
+				</footer>
+
+				<div class="modal" id="error">
+				  <div class="modal-background"></div>
+  				<div class="modal-card">
+				    <header class="modal-card-head">
+				      <p class="modal-card-title">Coś się zjebawszy!</p>
+				      <button class="delete" aria-label="close" id="alert_close"></button>
+				    </header>
+				    <section class="modal-card-body" id="error_message">
+				      Coś się zjebawszy!
+				    </section>
+				  </div>
+				</div>
+			</div>
+
+		</section>
+
+		<script>
+			var pref_buttons = Array.from(document.getElementsByClassName("sp_pref"));
+			var area_buttons = Array.from(document.getElementsByClassName("sp_area"));
+			var additionals = Array.from(document.getElementById("additionals").getElementsByTagName('input'));
+			var tgs = document.getElementById("talkgroups");
+			var priocals = document.getElementById("priocals");
+			var priosave = document.getElementById("priosave");
+			var send = document.getElementById("submit");
+			var sel_tag = "has-text-weight-bold";
+			var error_modal = document.getElementById("error");
+			var error_dismiss = document.getElementById("alert_close");
+			var error_msg = document.getElementById("error_message");
+
+  		if (typeof(Storage) !== "undefined") {
+				priocals.value = localStorage.getItem("gd77.priocals");
+				if (priocals.value !== "") {
+					priosave.checked = true;
+				}
+		 	} 
+
+			function sel_toggle(obj, tag) {
+				if (obj.classList.contains(tag)) {
+					obj.classList.remove(tag);
 				} else {
-					this.classList.add("is-outlined");
+					obj.classList.add(tag);
 				}
-			});
-		});
+			}
 
-		send.addEventListener("click", function(){
-			var payload = new Array();
-			buttons.forEach(function(button){
-				if(!button.classList.contains("is-outlined")) {
-					payload.push(button.text);
+			pref_buttons.concat(area_buttons).forEach(function(button){
+				var guzik = button;
+				guzik.addEventListener("click", function(){
+					sel_toggle(guzik, sel_tag);
+				});
+			});
+
+			error_dismiss.addEventListener("click", function(){
+				sel_toggle(error_modal, "is-active");
+			});
+
+			send.addEventListener("click", function(){
+				var payload = {
+					sp_prefix: [],
+					sp_area: [],
+					adds:[],
+					tgs:[],
+					options: {
+						prio: ""
+					}
+				};
+
+				pref_buttons.forEach(function(button){
+					if(button.classList.contains(sel_tag)) {
+						payload.sp_prefix.push(button.innerText);
+					}
+				});
+
+				area_buttons.forEach(function(button){
+					if(button.classList.contains(sel_tag)){
+						payload.sp_area.push(parseInt(button.innerText));
+					}
+				});
+
+				additionals.forEach(function(checkbox){
+					if(checkbox.checked) {
+						payload.adds.push(checkbox.value);
+					}
+				});
+
+				console.log(tgs);
+
+				Array.from(tgs.selectedOptions).forEach(function(option){
+					payload.tgs.push(option.value);	
+				});
+
+
+				payload.options.prio = priocals.value;
+				
+				// save prio list for later
+				if (priosave.checked) {
+					if (typeof(Storage) !== "undefined") {
+ 			   		localStorage.setItem("gd77.priocals", priocals.value);
+					} else {
+						error_msg.innerText = "Sorry kolego/koleżanko. Twoja przeglądarka nie pozwala zapisać twojej listy kontaktów priorytetowych.";
+						sel_toggle(error_modal, "is-active");
+					}
 				}
-			});
-			window.open("/csv?q="+payload.join(","));
-		});
-		
-	</script>
-	<script async src="https://www.googletagmanager.com/gtag/js?id=UA-220058-16"></script>
-	<script>window.dataLayer = window.dataLayer || [];
-	    function gtag(){dataLayer.push(arguments);}
-     	    gtag('js', new Date());
-            gtag('config', 'UA-220058-16');
-	</script>
 
-  </body>
+				console.log(payload);
+				window.open("/csv/" + msgpack.encode(payload).toString('hex'));
+			});
+
+		</script>
+			
+		<script async src="https://www.googletagmanager.com/gtag/js?id=UA-220058-16"></script>
+		<script>
+			window.dataLayer = window.dataLayer || [];
+			function gtag(){dataLayer.push(arguments);}
+			gtag('js', new Date());
+			gtag('config', 'UA-220058-16');
+		</script>
+
+		<script>
+			var disqus_config = function () {
+				this.page.url = 'http://gd77.sp5drs.xyz';
+				this.page.identifier = 'gd77';
+			};
+			(function() {var d = document, s = d.createElement('script');s.src = 'https://gd77.disqus.com/embed.js';s.setAttribute('data-timestamp', +new Date());(d.head || d.body).appendChild(s);})();	
+		</script>
+
+	</body>
 </html>
