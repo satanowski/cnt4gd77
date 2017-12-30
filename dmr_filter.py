@@ -196,9 +196,9 @@ class DrsDMRConverter:
 
         records_set = OrderedDict()
         self.add_additional_contacts_numeric(records_set, query_json['adds'])
+        self.add_areatalkgroups(records_set, query_json.get('tgs') or [])
         self.add_priority_contacts(records_set, query_json['options']['prio'])
         self.add_additional_contacts_alpha(records_set, query_json['adds'])
-        self.add_areatalkgroups(records_set, query_json.get('tgs') or [])
         self.add_contacts_by_area_and_prefix(
             records_set,
             query_json.get('sp_prefix') or self.SP_PREFIX_LIST,
