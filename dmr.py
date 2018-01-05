@@ -31,9 +31,7 @@ import sys
 import re
 
 from requests import get
-from flask import Flask, Response, render_template, abort
 import yaml
-import msgpack
 
 log.basicConfig(level=log.DEBUG)
 
@@ -217,35 +215,3 @@ class DrsDMRConverter:
         return buf
 
 
-app = Flask(__name__)  # pylint: disable=C0103
-dmr = DrsDMRConverter()  # pylint: disable=C0103
-
-@app.route("/", methods=["GET"])
-def index():
-    """Serve the main page."""
-    return render_template(
-        'index.html',
-        prefixy=dmr.SP_PREFIX_LIST,
-        talkgroups=dmr.TALK_GROUPS,
-        additionals=dmr.ADDITIONAL_CONTACTS
-    )
-
-
-@app.route("/csv/<query>", methods=["GET"])
-def get_csv_file(query):
-    """Serve the file."""
-    try:
-        query = msgpack.unpackb(bytearray.fromhex(query), encoding='utf-8')
-    except (msgpack.exceptions.UnpackValueError, ValueError) as error:
-        log.error("Wrong query: %s", error)
-        abort(404)
-
-    return Response(
-        dmr.as_csv(query),
-        mimetype="text/csv",
-        headers={"Content-disposition": "attachment; filename=gd77-contacts.csv"}
-    )
-
-
-if __name__ == "__main__":
-    app.run(host='0.0.0.0', debug=True)

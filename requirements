@@ -3,3 +3,4 @@ requests
 gunicorn
 PyYAML
 msgpack-python
+lxml
