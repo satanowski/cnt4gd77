@@ -1,5 +1,5 @@
 #
-# Copyright 2017 by Satanowski
+# Copyright 2017-2018 by Satanowski
 #
 
 # This program is free software: you can redistribute it and/or modify it under
@@ -19,7 +19,7 @@
 """
 CSV converter hamdigital <-> gd-77
 
-Copyright (C) 2017 Satanowski <satanowski@gmail.com>
+Copyright (C) 2017-2018 Satanowski <satanowski@gmail.com>
 License: GNU AGPLv3
 """
 

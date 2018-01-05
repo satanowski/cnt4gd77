@@ -1,5 +1,5 @@
 #
-# Copyright 2017 by Satanowski
+# Copyright 2017-2018 by Satanowski
 #
 
 # This program is free software: you can redistribute it and/or modify it under
@@ -15,6 +15,13 @@
 # You should have received a copy of the GNU General Public License along with
 # this program.  If not, see <http://www.gnu.org/licenses/>.
 
+
+"""
+Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+
+Copyright (C) 2017-2018 Satanowski <satanowski@gmail.com>
+License: GNU AGPLv3
+"""
 
 import logging as log
 
