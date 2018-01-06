@@ -28,31 +28,32 @@ import logging as log
 from flask import Flask, Response, render_template, abort
 import msgpack
 
-from dmr import DrsDMRConverter
-from przemienniki import PrzemienikiWrapper
+from contacts import ContactsFactory
+import utils
 
+utils.load_config()
 
 log.basicConfig(level=log.DEBUG)
 
 app = Flask(__name__)  # pylint: disable=C0103
-dmr = DrsDMRConverter()  # pylint: disable=C0103
-reps = PrzemienikiWrapper()
+contacts = ContactsFactory()  # pylint: disable=C0103
+
 
 @app.route("/", methods=["GET"])
 def index():
     """Serve the main page."""
     return render_template(
         'index.html',
-        prefixy=dmr.SP_PREFIX_LIST,
-        sp_talkgroups=dmr.SP_TALK_GROUPS,
-        additionals=dmr.ADDITIONAL_CONTACTS,
-        additional_tgs=dmr.ADDITIONAL_TGS,
-        bands=reps.bands,
-        modes=reps.modes,
-        bands_supported=dmr.SUPP_BANDS,
-        modes_supported=dmr.SUPP_MODES,
-        gov_services=dmr.GOV_SERVICES,
-        pmr=dmr.PMR
+        prefixy=utils.CONFIG['sp_prefixy'],
+        sp_talkgroups=utils.CONFIG['sp_talk_groups'],
+        additionals=utils.CONFIG['additional_contacts'],
+        additional_tgs=utils.CONFIG['additional_talkgroups'],
+        bands=util.REPS.bands,
+        modes=util.REPS.modes,
+        bands_supported=utils.CONFIG['supported_bands'],
+        modes_supported=utils.CONFIG['supported_modes'],
+        gov_services=utils.CONFIG['gov_services'],
+        pmr=utils.CONFIG['pmr']
     )
 
 
@@ -61,12 +62,17 @@ def get_csv_file(query):
     """Serve the file."""
     try:
         query = msgpack.unpackb(bytearray.fromhex(query), encoding='utf-8')
+        log.debug(query)
     except (msgpack.exceptions.UnpackValueError, ValueError) as error:
         log.error("Wrong query: %s", error)
         abort(404)
 
+    contacts_csv = contacts.as_csv(query['contacts'])
+    if utils.are_channels_requested(query):
+        pass  # to-do: generate csv for channels and make zip
+
     return Response(
-        dmr.as_csv(query),
+        contacts_csv,
         mimetype="text/csv",
         headers={"Content-disposition": "attachment; filename=gd77-contacts.csv"}
     )
