@@ -33,6 +33,8 @@ import re
 from requests import get
 import yaml
 
+from kab import KAB
+
 log.basicConfig(level=log.DEBUG)
 
 
@@ -57,17 +59,26 @@ class DrsDMRConverter:
             log.error('Cannot read config file! Exiting!')
             sys.exit(1)
         if not self.config:
-            log.error('Empty config! Exiting!r')
+            log.error('Empty config! Exiting!')
             sys.exit(1)
 
         self.SP_PREFIX_LIST = self.config.get('sp_prefixy', [])
-        self.TALK_GROUPS = self.config.get('sp_talk_groups', {})
+        self.SP_TALK_GROUPS = self.config.get('sp_talk_groups', {})
         self.ADDITIONAL_CONTACTS = self.config.get('additional_contacts', [])
+        self.ADDITIONAL_TGS = self.config.get('additional_talkgroups', [])
+        self.KAB = KAB.retrieve_members()
+        self.SUPP_MODES = {a:b for a,b in self.config.get('supported_modes', [])}
+        self.SUPP_BANDS = self.config.get('supported_bands', [])
+        self.GOV_SERVICES = self.config.get('gov_services', [])
+        self.PMR = self.config.get('PMR', [])
 
     def __init__(self):
-        self.SP_PREFIX_LIST = [] 
-        self.TALK_GROUPS = []
+        self.SP_PREFIX_LIST = []
+        self.SP_TALK_GROUPS = []
+        self.ADDITIONAL_TGS = []
         self.ADDITIONAL_CONTACTS = []
+        self.GOV_SERVICES = []
+        self.PMR = []
         self.records = {}
         self._load_config()
         self._get_records()
@@ -97,9 +108,16 @@ class DrsDMRConverter:
         )
 
     def _read_special_group(self, name):
-        if not name in self.config:
+        # special case for SP5KAB
+        if name.lower() == 'sp5kab' and self.KAB: # use fresh list if exists
+            group = self.KAB
+        else:
+            group = self.config.get(name)
+
+        if not group:
             return None
-        return sorted(self.config.get(name), key=lambda sign: sign[2:])
+
+        return sorted(group, key=lambda sign: sign[2:])
 
     def _get_rec_by_call(self, callsign):
         for rec in self.records:
@@ -197,11 +215,12 @@ class DrsDMRConverter:
         self.add_areatalkgroups(records_set, query_json.get('tgs') or [])
         self.add_priority_contacts(records_set, query_json['options']['prio'])
         self.add_additional_contacts_alpha(records_set, query_json['adds'])
-        self.add_contacts_by_area_and_prefix(
-            records_set,
-            query_json.get('sp_prefix') or self.SP_PREFIX_LIST,
-            query_json.get('sp_area') or range(1, 9)
-        )
+        if all(map(query_json.get, ['sp_area', 'sp_prefix'])):
+            self.add_contacts_by_area_and_prefix(
+                records_set,
+                query_json.get('sp_prefix'),
+                query_json.get('sp_area')
+            )
 
         for i, rec_id in enumerate(records_set):
             record = records_set[rec_id]
@@ -213,5 +232,3 @@ class DrsDMRConverter:
             ))
 
         return buf
-
-

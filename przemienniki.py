@@ -44,6 +44,7 @@ class PrzemienikiWrapper:
         self.repeaters = []
         self.bands = set()
         self.modes = set()
+        self.get_repeaters()
 
     @staticmethod
     def _ext_many(obj, field):
@@ -80,8 +81,10 @@ class PrzemienikiWrapper:
         self.repeaters.clear()
         for repeater in root.iter('repeater'):
             data = self._extract_repeater_data(repeater)
-            self.bands.update(set(data.bands))
+            self.bands.update(set(map(str.lower, data.bands)))
             self.modes.update(set(data.modes))
             self.repeaters.append(data)
 
+        self.bands = sorted(list(self.bands))
+        self.modes = sorted(list(self.modes))
         return len(self.repeaters)

@@ -37,9 +37,6 @@ class KAB:
 
     __URL__ = 'https://sp5kab.pl/czlonkowie/'
 
-    def __init__(self):
-        self.members = []
-        self.retrieve_members()
 
     @staticmethod
     def _retrieve(url):
@@ -57,13 +54,14 @@ class KAB:
 
         return req.content.decode()
 
-    def retrieve_members(self):
+    @staticmethod
+    def retrieve_members():
         """Parse club site to get callsigns of club members."""
-        self.members = []
-        parser = pq(self._retrieve(self.__URL__))
+        members = []
+        parser = pq(KAB._retrieve(KAB.__URL__))
 
         for member in map(lambda li: li.text.split(), parser('.entry-content li')):
             if len(member) > 1:
-                self.members.append(member[-1])
+                members.append(member[-1])
 
-        return len(self.members)
+        return members

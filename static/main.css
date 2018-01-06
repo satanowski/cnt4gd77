@@ -1,0 +1,28 @@
+.gap {
+    margin-bottom: 50px;
+}
+
+.top_gap {
+    margin-top: 40px;
+}
+
+.kol1, .kol2, .kol5, .kol6 {
+    color:white;
+}
+
+.kol1 { background-color: #074358;}
+.kol2 { background-color: #458985;}
+.kol5 { background-color: #A55C55;}
+.kol6 { background-color: #424e56;}
+.kol3 { background-color: #D7D6A5;}
+.kol4 { background-color: #DBA67B;}
+
+.right_bottom {
+    bottom:20px;
+    right:30px;
+    position:absolute;
+}
+
+.is-bordered {
+    border:1px solid #ccc;
+}

@@ -29,12 +29,14 @@ from flask import Flask, Response, render_template, abort
 import msgpack
 
 from dmr import DrsDMRConverter
+from przemienniki import PrzemienikiWrapper
 
 
 log.basicConfig(level=log.DEBUG)
 
 app = Flask(__name__)  # pylint: disable=C0103
 dmr = DrsDMRConverter()  # pylint: disable=C0103
+reps = PrzemienikiWrapper()
 
 @app.route("/", methods=["GET"])
 def index():
@@ -42,8 +44,15 @@ def index():
     return render_template(
         'index.html',
         prefixy=dmr.SP_PREFIX_LIST,
-        talkgroups=dmr.TALK_GROUPS,
-        additionals=dmr.ADDITIONAL_CONTACTS
+        sp_talkgroups=dmr.SP_TALK_GROUPS,
+        additionals=dmr.ADDITIONAL_CONTACTS,
+        additional_tgs=dmr.ADDITIONAL_TGS,
+        bands=reps.bands,
+        modes=reps.modes,
+        bands_supported=dmr.SUPP_BANDS,
+        modes_supported=dmr.SUPP_MODES,
+        gov_services=dmr.GOV_SERVICES,
+        pmr=dmr.PMR
     )
 
 

@@ -1,305 +1,371 @@
-<!DOCTYPE html>
-<html>
-	<head>
-		<meta charset="utf-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1">
-		<title>Kontakty dla GD-77</title>
-		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
-		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.6.1/css/bulma.min.css">
+{% extends "base.html" %}
+{% block title %}Kontakty dla GD-77{% endblock %}
 
-		<!--[if lte IE 9]>
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/es5-shim/4.1.10/es5-shim.min.js"></script>
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/json3/3.3.2/json3.min.js"></script>
-		<![endif]-->
-		<script src="https://rawgit.com/kawanet/msgpack-lite/master/dist/msgpack.min.js"></script>
+{% block content %}
+<section class="section">
 
-		<style>
- 			.gap {margin-bottom: 50px;}
-			.top_gap {margin-top: 40px;}
-			.kol1 { background-color: #074358; color:white;}
-			.kol2 { background-color: #458985; color:white;}
-			.kol3 { background-color: #D7D6A5;}
-			.kol4 { background-color: #DBA67B;}
-			.kol5 { background-color: #A55C55; color:white;}
-			.kol6 { background-color: #424e56; color:white;}
-			.right_bottom {bottom:20px; right:30px; position:absolute;
-			}
-		</style>
-	</head>
-	<body>
-		<section class="section">
+	<div class="container has-text-centered">
 
-			<div class="container has-text-centered">
-				<section class="hero is-primary is-bold gap">
-					<div class="hero-body kol1">
-						<div class="container">
-							<h1 class="title">Generator listy kontaktów dla radia GD-77</h1>
-							<h2 class="subtitle">na bazie danych z <a href="http://ham-digital.net">http://ham-digital.net</a></h2>
-						</div>
-					</div>
-				</section>
+		<section class="hero is-dark" style="border-left:1px solid #ccc;border-right:1px solid #ccc">
+		  <!-- Hero head: will stick at the top -->
+		  <div class="hero-head">
+		    <header class="navbar">
+		      <div class="container">
 
-				<div class="tile is-ancestor">
-					<div class="tile is-parent">
-						<article class="tile is-child notification kol2">
-							<p class="title">Dodatkowe kontakty</p>
-							<div class="content" id="additionals">
-							{% for contact in additionals %}
-								<div class="box">
-								  <article class="media">
-								    <div class="media-content">
-								      <div class="content">
-								        <p>
-													<label class="checkbox">
-														<input type="checkbox" value="{{contact.id}}">&nbsp;<strong>{{ contact.name|safe }}</strong>
-													</label>
-													<br>
-													{{ contact.description|safe }}
-        								</p>
-											</div>
-										</div>
-									</article>
-								</div>
-							{% endfor %}
+		        <div id="navbarMenuHeroC" class="navbar-menu">
+		          <div class="navbar-end">
+		            <a class="navbar-item">
+		              About
+		            </a>
+		            <span class="navbar-item">
+		            	&nbsp;
+		            </span>
+		          </div>
+		        </div>
+		      </div>
+		    </header>
+		  </div>
 
-							{% if talkgroups %}	
-								<div class="box">
-								  <article class="media">
-								    <div class="media-content">
-								      <div class="content">
-								        <p>
-													<label class="checkbox">
-														<strong>{{talkgroups['name']}}</strong>
-													</label>
-													<br>
-													{{ talkgroups['description']|safe}}
-													<div class="select is-multiple" style="width:100%">
-													  <select multiple size="3" style="width:100%" id="talkgroups">
-														{% for tg in talkgroups['items'] %}
-															<option value="{{tg['id']}}">{{tg['name']}} ⇆ {{tg['id']}}</option>
-														{% endfor %}
-														</select>
-													</div>
-        								</p>
-											</div>
-										</div>
-									</article>
-								</div>
-							{% endif %}
+		  <!-- Hero content: will be in the middle -->
+		  <div class="hero-body">
+		    <div class="container has-text-centered">
+		      <h1 class="title">
+		        Generator listy kontaktów dla radia GD-77
+		      </h1>
+		      <h2 class="subtitle">
+		        na bazie danych z <a href="http://ham-digital.net">http://ham-digital.net</a>
+		      </h2>
+		    </div>
+		  </div>
 
-							</div>
-						</article>
-					</div>
-
-					<div class="tile is-vertical is-8">
-						<div class="tile">
-							<div class="tile is-parent is-vertical">
-								<article class="tile is-child notification kol3">
-									<p class="title">Prefixy</p>
-									<p class="subtitle">Wybierz prefixy znaków</p>
-									<div class="buttons is-centered top_gap">
-										<div class="buttons has-addons">
-										{% for o in prefixy %}
-  										<span class="button is-capitalized sp_pref">{{o}}</span>
-										{% endfor %}
-										</div>
-									</div>
-								</article>
-								
-								<article class="tile is-child notification kol4">
-									<p class="title">Okręgi</p>
-									<p class="subtitle">Wybierz okręgi wywoławcze</p>
-									<div class="buttons is-centered top_gap">
-										<div class="buttons has-addons">
-										{% for i in range(1, 10) %}
-  										<span class="button sp_area">{{i}}</span>
-										{% endfor %}
-										</div>
-									</div>
-								</article>
-
-								
-								<article class="tile is-child notification kol5">
-									<p class="title">Opcje</p>
-									<div class="field has-text-left">
-	  								<label class="label">Kontakty priorytetowe</label>
-  									<div class="control has-icons-left">
-    									<input class="input" id="priocals" type="text" placeholder="znaki wywoławcze lub identyfikatory DMR" value="">
-    									<span class="icon is-small is-left"><i class="fa fa-user"></i></span>
-									 	</div>
-  									<p class="help is-dark">
-											<label class="checkbox"><input type="checkbox" id="priosave">&nbsp;Zapamiętaj</label>
-										</p>
-									</div>
-
-
-
-									<div class="field has-text-left">
-	  								<label class="label">Lista kontaktów</label>
-  									<p class="k">
-											<label class="checkbox"><input type="checkbox" disabled id="channels">&nbsp;Generuj listę kanałów (jeszcze nie skończone)</label>
-										</p>
-									</div>
-
-
-									<div class="level is-pulled-right right-bottom">
-										<div class="level-right">
-  	  								<p class="level-item"><a class="button is-dark" id="submit">Generuj!</a></p>
-									  </div>
-									</div>
-								</article>
-
-							</div>
-							
-							<div class="tile is-parent">
-								<article class="tile is-child notification kol6">
-									<p class="title">Komentarze</p>
-									<div class="content" id="disqus_thread"></div>
-								</article>
-							</div>
-
-						</div>
-					</div>
-				</div>
-
-				<div class="tile is-ancestor">
-					<div class="tile is-parent">
-					</div>
-				</div>
-
-
-				<footer class="footer">
-					<div class="container">
-						<div class="content has-text-centered">
-							<p>2017 © sp5drs</p>
-						</div>
-					</div>
-				</footer>
-
-				<div class="modal" id="error">
-				  <div class="modal-background"></div>
-  				<div class="modal-card">
-				    <header class="modal-card-head">
-				      <p class="modal-card-title">Coś się zjebawszy!</p>
-				      <button class="delete" aria-label="close" id="alert_close"></button>
-				    </header>
-				    <section class="modal-card-body" id="error_message">
-				      Coś się zjebawszy!
-				    </section>
-				  </div>
-				</div>
-			</div>
-
+		  <!-- Hero footer: will stick at the bottom -->
+		  <div class="hero-foot">
+		    <nav class="tabs is-boxed is-fullwidth">
+		      <div class="container">
+		        <ul>
+		           <li class="navbutton is-active" section="prefarea"><a><span class="icon is-small"><i class="fa fa-map-o"></i></span><span>Prefixy i okręgi kontaktów</span></a></li>
+				   <li class="navbutton" section="talkgroups"><a><span class="icon is-small"><i class="fa fa-users"></i></span><span>Grupy rozmowne</span></a></li>
+				   <li class="navbutton" section="speccont"><a><span class="icon is-small"><i class="fa fa-user"></i></span><span>Kontakty specjalne</span></a></li>
+				   <li class="navbutton" section="channels"><a><span class="icon is-small"><i class="fa fa-server"></i></span><span>Kanały</span></a></li>
+				   <li class="navbutton" section="generate"><a><span class="icon is-small"><i class="fa fa-magic"></i></span><span>Generuj</span></a></li>
+				   <li class="navbutton" section="comments"><a href=#disqus_thread""><span class="icon is-small"><i class="fa fa-commenting-o"></i></span><span>Komentarze</span></a></li>
+		      </div>
+		    </nav>
+		  </div>
 		</section>
 
-		<script>
-			var pref_buttons = Array.from(document.getElementsByClassName("sp_pref"));
-			var area_buttons = Array.from(document.getElementsByClassName("sp_area"));
-			var additionals = Array.from(document.getElementById("additionals").getElementsByTagName('input'));
-			var tgs = document.getElementById("talkgroups");
-			var priocals = document.getElementById("priocals");
-			var priosave = document.getElementById("priosave");
-			var send = document.getElementById("submit");
-			var sel_tag = "has-text-weight-bold";
-			var error_modal = document.getElementById("error");
-			var error_dismiss = document.getElementById("alert_close");
-			var error_msg = document.getElementById("error_message");
+		<section class="section" style="border:1px solid #ccc;border-top:none">
+			<div class="container">
+				<article class="" id="prefarea">  <!-- Prefixy -->
+					<div class="columns">
+						<div class="column is-one-quarter has-text-left">
+							<div class="notification is-warning">
+							  Musisz zaznaczyć przynajmniej jeden prefix i jeden okręg wywoławczy.<br/>
+							  Jeśli nie nic nie zaznaczysz lista kontaktów zostanie sporządzona na podstawie pozostałych ustawień.
+							</div>
+						</div>
 
-  		if (typeof(Storage) !== "undefined") {
-				priocals.value = localStorage.getItem("gd77.priocals");
-				if (priocals.value !== "") {
-					priosave.checked = true;
-				}
-		 	} 
+						<div class="column has-text-left">
+							<br>
+							<h5 class="title is-5">Prefixy</h5>
+							<input type="checkbox" id="prefix_all">&nbsp;<strong>*</strong>&nbsp;
+							{% for p in prefixy %}
+							<label class="checkbox">
+									<input type="checkbox" class="prefix_selection" value="{{p}}">&nbsp;<strong>{{ p }}</strong>&nbsp;
+							</label>
+							{% endfor %}
 
-			function sel_toggle(obj, tag) {
-				if (obj.classList.contains(tag)) {
-					obj.classList.remove(tag);
-				} else {
-					obj.classList.add(tag);
-				}
-			}
+							<br>
+							<br>
 
-			pref_buttons.concat(area_buttons).forEach(function(button){
-				var guzik = button;
-				guzik.addEventListener("click", function(){
-					sel_toggle(guzik, sel_tag);
-				});
-			});
+					  		<h5 class="title is-5">Okręgi wywoławcze</h5>
+					  		<input type="checkbox" id="area_all">&nbsp;<strong>*</strong>&nbsp;
+							{% for a in range(1, 10) %}
+								<input type="checkbox" value="{{a}}" class="area_selection">&nbsp;<strong>{{ a }}</strong>&nbsp;
+							{% endfor %}
+					  	</div>
+					</div>
+				</article>
 
-			error_dismiss.addEventListener("click", function(){
-				sel_toggle(error_modal, "is-active");
-			});
+				<article class="is-hidden" id="talkgroups"> <!-- Grupy rozmowne -->
+					<div class="columns">
+						<div class="column is-one-quarter has-text-left">
+							<div class="notification is-warning">
+								Zaznacz, które grupy rozmowne mają zostać dodane do twojej listy.<br/>
+								Te kontakty znajdą się na początku listy.
+							</div>
+						</div>
 
-			send.addEventListener("click", function(){
-				var payload = {
-					sp_prefix: [],
-					sp_area: [],
-					adds:[],
-					tgs:[],
-					options: {
-						prio: ""
-					}
-				};
-
-				pref_buttons.forEach(function(button){
-					if(button.classList.contains(sel_tag)) {
-						payload.sp_prefix.push(button.innerText);
-					}
-				});
-
-				area_buttons.forEach(function(button){
-					if(button.classList.contains(sel_tag)){
-						payload.sp_area.push(parseInt(button.innerText));
-					}
-				});
-
-				additionals.forEach(function(checkbox){
-					if(checkbox.checked) {
-						payload.adds.push(checkbox.value);
-					}
-				});
-
-				console.log(tgs);
-
-				Array.from(tgs.selectedOptions).forEach(function(option){
-					payload.tgs.push(option.value);	
-				});
+						<div class="column has-text-left">
+							<table class="table is-hoverable">
+								<tbody>
+								{% for contact in additional_tgs %}
+							    	<tr>
+							      		<th><input type="checkbox" value="{{contact.id}}" class="tg_checkbox"></th>
+							      		<td><code>{{contact.id}}</code></td>
+							      		<td><strong>{{ contact.name|safe }}</strong></td>
+							      		<td>{{ contact.description|safe }}</td>
+							    	</tr>
+							    {% endfor %}
+							    </tbody>
+							</table>
 
 
-				payload.options.prio = priocals.value;
-				
-				// save prio list for later
-				if (priosave.checked) {
-					if (typeof(Storage) !== "undefined") {
- 			   		localStorage.setItem("gd77.priocals", priocals.value);
-					} else {
-						error_msg.innerText = "Sorry kolego/koleżanko. Twoja przeglądarka nie pozwala zapisać twojej listy kontaktów priorytetowych.";
-						sel_toggle(error_modal, "is-active");
-					}
-				}
+							{% if sp_talkgroups %}
+							<p class="subtitle">{{sp_talkgroups['name']}}</p>
+							<table class="table is-hoverable">
+								<thead>
+									<tr>
+										<th colspan="3">{{ sp_talkgroups['description']|safe}}</th>
+									</tr>
+								</thead>
+								<tbody>
+								{% for tg in sp_talkgroups['items'] %}
+									<tr>
+										<th><input type="checkbox" value="{{tg['id']}}" class="tg_checkbox"></th>
+										<td>{{tg['id']}}</td>
+										<td>{{tg['name']}}</td>
+									</tr>
+								{% endfor %}
+								</tbody>
+							</table>
+							{% endif %}
+					  	</div>
+					</div>
+				</article>
 
-				console.log(payload);
-				window.open("/csv/" + msgpack.encode(payload).toString('hex'));
-			});
 
-		</script>
-			
-		<script async src="https://www.googletagmanager.com/gtag/js?id=UA-220058-16"></script>
-		<script>
-			window.dataLayer = window.dataLayer || [];
-			function gtag(){dataLayer.push(arguments);}
-			gtag('js', new Date());
-			gtag('config', 'UA-220058-16');
-		</script>
+				<article class="is-hidden" id="speccont"> <!--  Kontakty specjalne -->
+					<div class="columns">
+						<div class="column is-one-quarter has-text-left">
+							<div class="notification is-warning">
+							  Kontakty specjalne zostaną dodane na początku twojej listy jednakże po wcześniej wybranych grupach rozmównych.
+							</div>
+						</div>
 
-		<script>
-			var disqus_config = function () {
-				this.page.url = 'http://gd77.sp5drs.xyz';
-				this.page.identifier = 'gd77';
-			};
-			(function() {var d = document, s = d.createElement('script');s.src = 'https://gd77.disqus.com/embed.js';s.setAttribute('data-timestamp', +new Date());(d.head || d.body).appendChild(s);})();	
-		</script>
+						<div class="column has-text-left is-two-thirds">
+							{% if additionals %}
+							<p class="subtitle">Kontakty dodatkowe</p>
+							<table class="table is-hoverable">
+								<tbody>
+								{% for contact in additionals %}
+									<tr>
+										<th><input type="checkbox" value="{{contact['id']}}" class="speccontact"></th>
+										<td>{{contact['name']}}</td>
+										<td>{{contact['description']|safe}}</td>
+									</tr>
+								{% endfor %}
+								</tbody>
+							</table>
+							{% endif %}
 
-	</body>
-</html>
+
+
+							<br>
+							<div class="field has-text-left">
+								<label class="label">Kontakty priorytetowe</label>
+								<div class="control has-icons-left">
+									<input class="input" id="priocals" type="text" placeholder="znaki wywoławcze lub identyfikatory DMR" value="">
+									<span class="icon is-small is-left"><i class="fa fa-user"></i></span>
+							 	</div>
+								<p class="is-dark">
+									<label class="checkbox"><input type="checkbox" id="priosave">&nbsp;Zapamiętaj</label>
+								</p>
+							</div>
+
+							<div class="field has-text-left">
+								<label class="label">Kontakty ignorowane</label>
+								<div class="control has-icons-left">
+								<input class="input" id="ignocals" type="text" placeholder="znaki wywoławcze lub identyfikatory DMR" value="">
+								<span class="icon is-small is-left"><i class="fa fa-user"></i></span>
+							 	</div>
+								<p class="is-dark">
+									<label class="checkbox"><input type="checkbox" id="ignosave">&nbsp;Zapamiętaj</label>
+								</p>
+							</div>
+					  	</div>
+					</div>
+				</article>
+
+				<article class="is-hidden" id="channels"> <!-- Kanały -->
+					<h3 class="title is-3">Przemienniki</h3>
+					<div class="columns">
+						<div class="column is-one-quarter has-text-left">
+							<div class="notification is-warning">
+							  Symbolem <i class="fa fa-times" aria-hidden="true"></i> oznaczone są pasma i tryby nie obsługiwane przez radio GD-77.
+							</div>
+						</div>
+
+						<div class="column has-text-left">
+
+							<table class="table is-hoverable">
+								<tr>
+									<td><i class="fa fa-tasks" aria-hidden="true">&nbsp;</i></td>
+									<td><strong>Pasma</strong></td>
+									<td>
+										{% for band in bands %}
+										<label class="checkbox">
+											{%if band in bands_supported%}
+											<input type="checkbox" value="{{band}}" class="band_checkbox">&nbsp;{{band}}&nbsp;
+											{% else %}
+											<i class="fa fa-times" aria-hidden="true"></i>&nbsp;{{band}}&nbsp;
+											{% endif %}
+										</label>
+										{% endfor %}
+									</td>
+								</tr>
+
+								<tr>
+									<td><i class="fa fa-cog" aria-hidden="true">&nbsp;</i></td>
+									<td><strong>Modulacje/tryby</strong></td>
+									<td>
+										{% for mode in modes %}
+											<label class="checkbox">
+											{% if mode in modes_supported %}
+											<input type="checkbox" value="{{mode}}" class="mode_checkbox">&nbsp;{{modes_supported[mode]}}&nbsp;
+											{% else %}
+											<i class="fa fa-times" aria-hidden="true"></i>&nbsp;{{mode}}&nbsp;
+											{% endif%}
+											</label>
+										{% endfor %}
+									</td>
+								</tr>
+
+								<tr>
+									<td><i class="fa fa-map-o" aria-hidden="true">&nbsp;</i></td>
+									<td><strong>Obszary</strong></td>
+									<td>
+										{% for area in range(1,10) %}
+											<label class="checkbox">
+												<input type="checkbox" value="{{area}}" class="rep_area_checkbox">&nbsp;{{area}}&nbsp;
+											</label>
+										{% endfor %}
+									</td>
+							</table>
+						</div>
+					</div>
+
+					<h3 class="title is-3">Służby</h3>
+					<div class="columns">
+						<div class="column is-one-quarter has-text-left">
+							<div class="notification is-danger">
+							  <strong>Pamiętaj!</strong> O ile nasłuch niezabezpieczonych częstotliwości używanych przez służby państwowe jest legalny, o tyle udostępnianie pozyskanych w ten sposób informacji jest już <strong>surowo zabronione</strong>! To samo dotyczy nadawania na tych częstotliwościach.
+							</div>
+						</div>
+
+						{% for service in gov_services %}
+						<div class="column has-text-left">
+							<h5 class="title is-5">{{service['name']}}</h5>
+							<table class="table is-hoverable">
+								<thead>
+									<tr>
+										<td colspan="3">
+											<label class="checkbox">
+												<input type="checkbox" value="" class="service_checkbox_all" service="{{service['name']}}">&nbsp;Wszystkie&nbsp;
+											</label>
+										</td>
+									</tr>
+								</thead>
+								<tbody>
+									{% for freq in service['freqs'] %}
+										<tr>
+											<td><input type="checkbox" value="{{freq}}" class="service_checkbox" service="{{service['name']}}"></td>
+											<td>{{'%3.04f' % freq}}</td>
+											<td>MHz</td>
+										</tr>
+									{% endfor %}
+								</tbody>
+							</table>
+						</div>
+						{% endfor %}
+					</div>
+
+
+					<h3 class="title is-3">PMR</h3>
+					<div class="columns">
+						<div class="column is-one-quarter has-text-left">
+							<div class="notification is-danger">
+							  <strong>Pamiętaj!</strong> Nadawanie na częstotliwościach PMR radiem GD-77 <strong>jest w Polsce zakazane</strong>!
+							</div>
+						</div>
+
+						<div class="column has-text-left">
+							<table class="table is-hoverable">
+								<thead>
+									<tr>
+										<td colspan="3">
+											<label class="checkbox">
+												<input type="checkbox" value="" id="pmr_sel_all">&nbsp;Wszystkie&nbsp;
+											</label>
+										</td>
+									</tr>
+								</thead>
+								<tbody>
+									{% for freq in pmr %}
+										<tr>
+											<td><input type="checkbox" value="{{freq}}" class="pmr_checkbox"></td>
+											<td>{{'%3.05f' % freq}}</td>
+											<td>MHz</td>
+										</tr>
+									{% endfor %}
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</article>
+
+				<article class="is-hidden" id="generate"> <!-- Generuj -->
+					<div class="columns">
+						<div class="column is-one-quarter has-text-left">
+							<div class="notification is-warning">
+							  Koniec ustawiania. Czas generowania. Kliknij w guzik aby pobrać plik.
+							</div>
+						</div>
+
+						<div class="column has-text-left is-two-thirds">
+							<div class="level top_gap">
+								<div class="level-item has-text-centered">
+									<a class="button is-dark is-large is-rounded" id="submit"><i class="fa fa-microchip" aria-hidden="true">&nbsp;</i>Generuj!</a>
+				  				</div>
+				  			</div>
+					  	</div>
+					</div>
+				</article>
+
+				<article class="has-text-centered is-hidden" id="comments"> <!-- Komentarze -->
+					<div class="content" id="disqus_thread" style="width:95%"></div>
+				</article>
+
+
+		    </div>
+		</section>
+
+		<footer class="footer">
+			<div class="container">
+				<div class="content has-text-centered">
+					<p>2017-2018 © sp5drs</p>
+				</div>
+			</div>
+		</footer>
+
+
+		<div class="modal" id="error">
+		  <div class="modal-background"></div>
+			<div class="modal-card">
+		    <header class="modal-card-head">
+		      <p class="modal-card-title">Coś się zjebawszy!</p>
+		      <button class="delete" aria-label="close" id="alert_close"></button>
+		    </header>
+		    <section class="modal-card-body" id="error_message">
+		      Coś się zjebawszy!
+		    </section>
+		  </div>
+		</div>
+	</div>
+
+</section>
+<script id="dsq-count-scr" src="//gd77.disqus.com/count.js" async></script>
+<script src="{{ url_for('static', filename='main.js') }}"></script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-220058-16"></script>
+<script src="{{ url_for('static', filename='stuff.js') }}"></script>
+{% endblock %}

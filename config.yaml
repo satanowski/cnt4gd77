@@ -1,3 +1,13 @@
+supported_bands:
+  - 2m
+  - 70cm
+
+supported_modes:
+  - [FM,FM]
+  - [MOTOTRBO,DMR]
+  - [FMLINK, FM Link]
+  - [ECHOLINK, Echo Link]
+
 sp_prefixy:
   - HF
   - SN
@@ -51,17 +61,30 @@ sp_talk_groups:
       id:   2609
 
 
-additional_contacts:
+additional_talkgroups:
   -
     name: DMR Global
-    description: Lorem ipsum
+    description: "Globalna grupa rozmowna"
     id:   1
 
   -
+    name: DMR Europe
+    description: "Europejska grupa rozmowna"
+    id:   2
+
+  -
     name: DMR Local
-    description: Lorem ipsum
+    description: "Lokalna grupa rozmowna"
     id:   9
 
+  -
+    name:        "WW English"
+    description: "World Wide English"
+    id:          13
+
+
+
+additional_contacts:
   -
     name:        Echo
     description: "Papuga <code>260097</code>"
@@ -70,14 +93,10 @@ additional_contacts:
   -
     name:        SP5KAB
     description: "Członkowie klubu SP5KAB zostaną dodani na początku listy (niezaleźnie od wybranych okręgów i prefiksów)"
-    id:          sp5kab 
+    id:          sp5kab
 
-  -
-    name:        "WW English"
-    description: "World Wide English <code>TS1/TG13</code>"
-    id:          13
 
-  
+
 
 sp5kab:
   - HF5JN
@@ -142,3 +161,46 @@ sp5kab:
   - SQ8JMD
   - SQ8LAB
   - SQ9DEM
+
+gov_services:
+  -
+    name: Metro
+    freqs:
+      - 154.450000
+      - 154.500000
+      - 154.525000
+      - 415.262500
+      - 415.462500
+      - 425.662500
+      - 425.787500
+      - 425.862500
+      - 425.987500
+      - 426.950000
+
+  -
+    name: PKP
+    freqs:
+      - 150.100000
+      - 150.150000
+      - 150.175000
+      - 150.200000
+      - 150.225000
+      - 150.250000
+      - 150.300000
+      - 150.325000
+      - 150.375000
+      - 150.450000
+      - 150.500000
+      - 150.575000
+      - 154.555000
+
+
+PMR:
+  - 446.006250
+  - 446.018750
+  - 446.031250
+  - 446.043750
+  - 446.056250
+  - 446.068750
+  - 446.081250
+  - 446.093750
