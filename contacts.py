@@ -47,6 +47,7 @@ class ContactsFactory:
 
     def __init__(self):
         self.records = {}
+        self.ignored_contacts = []
         self._get_records()
 
     def _get_records(self):
@@ -114,6 +115,8 @@ class ContactsFactory:
         )
 
         for record in records_to_add:
+            if record['id'] in self.ignored_contacts:
+                continue
             rec_set[record['id']] = self._simple_dmr_rec(record['id'],
                                                          record['name'])
 
@@ -137,6 +140,8 @@ class ContactsFactory:
             if not spec_group:
                 continue
             for callsign in spec_group:
+                if callsign in self.ignored_contacts:
+                    continue
                 rec = self._get_rec_by_call(callsign)
                 if rec:
                     rec_set[rec.dmrid] = rec
@@ -166,7 +171,10 @@ class ContactsFactory:
 
         for rec_id in filter(lambda rec_id: rec_id not in rec_set,
                              rec_ids_sorted):
-            rec_set[rec_id] = self.records[rec_id]
+            a_record = self.records[rec_id]
+            if a_record.callsign in self.ignored_contacts:
+                continue
+            rec_set[rec_id] = a_record
 
 
     def as_csv(self, query_json: dict):
@@ -176,6 +184,10 @@ class ContactsFactory:
         buf = [head]
 
         records_set = OrderedDict()
+        self.ignored_contacts = list(map(
+            str.upper,
+            re.split('[,|.| |;]', query_json.get('igno',""))
+        ))
 
         self.add_additional_contacts_numeric(records_set, query_json['adds'])
         self.add_areatalkgroups(records_set, query_json['tgs'] or [])

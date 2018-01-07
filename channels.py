@@ -108,7 +108,7 @@ class ChannelsFactory:
                     else:
                         tx_tone = rx_tone = 'None'
 
-                    digital = "MOTOTRBO" in modes
+                    digital = "MOTOTRBO" in repeater.modes
 
                     channel = ChannelsFactory.ChannelRecord(
                         name=repeater.sign,
