@@ -24,9 +24,8 @@ License: GNU AGPLv3
 """
 
 import logging as log
-from collections import namedtuple, OrderedDict
+from collections import namedtuple
 
-from przemienniki import PrzemienikiWrapper
 import utils
 
 log.basicConfig(level=log.DEBUG)
@@ -41,7 +40,107 @@ class ChannelsFactory:
     )
 
     def __init__(self):
-        self.records = OrderedDict()
+        self.records = []
+
+    def _filter_rxtx(self, freqs, rx=True):
+        return filter(lambda r: (rx and 'rx' or 'tx') in r, freqs)
+
+    def _is_in_band(self, freq, boundaries):
+        if not isinstance(freq, float):
+            f = float(freq)
+        else:
+            f = freq
+
+        return f >= boundaries[0] and f <= boundaries[1]
+
+    def _is_2m(self, freq):
+        return self._is_in_band(freq, (144.0, 146.0))
+
+    def _is_70cm(self, freq):
+        return self._is_in_band(freq, (430.0, 440.0))
+
+    def filter_rep_freqs(self, freqs:list, band:str):
+        """Exctract correct frequencies from repeater record."""
+        rxs = map(lambda r: r.get('rx', 0), self._filter_rxtx(freqs))
+        txs = map(
+            lambda r: r.get('tx', 0),
+            self._filter_rxtx(freqs, False)
+        )
+
+        if band.lower() == '2m':
+            rx = list(filter(lambda f: self._is_2m(f), rxs))
+            tx = list(filter(lambda f: self._is_2m(f), txs))
+        elif band.lower() == '70cm':
+            rx = list(filter(lambda f: self._is_70cm(f), rxs))
+            tx = list(filter(lambda f: self._is_70cm(f), txs))
+        else:
+            return {}
+
+        if not all([rx, tx]):
+            return {}
+
+        return {
+            'rx': rx[0],
+            'tx': tx[0]
+        }
+
+
+    def add_repeaters(self, bands: list, modes: list, areas: list):
+        """Add Repeaters by given criterion."""
+        for repeater in utils.REPS.repeaters:
+            band_match = any([band.upper() in repeater.bands for band in bands])
+            mode_match = any([mode.upper() in repeater.modes for mode in modes])
+            area_match = any([repeater.sign.startswith("SR{}".format(area))
+                              for area in areas])
+
+            if all([band_match, mode_match, area_match]):
+                for band in bands:
+                    if band.lower() not in utils.CONFIG['supported_bands']:
+                        continue
+                    # one channel for each band
+                    freqs = self.filter_rep_freqs(repeater.freqs, band)
+                    if not freqs:
+                        continue
+
+                    if 'CTCSS' in repeater.activation:
+                        tx_tone = repeater.tones.get('tx', 'None')
+                        rx_tone = repeater.tones.get('rx', 'None')
+                    else:
+                        tx_tone = rx_tone = 'None'
+
+                    digital = "MOTOTRBO" in modes
+
+                    channel = ChannelsFactory.ChannelRecord(
+                        name=repeater.sign,
+                        rx_freq=freqs['rx'],
+                        tx_freq=freqs['tx'],
+                        mode="Digital" if digital else "Analog",
+                        power='High',
+                        rx_tone=rx_tone,
+                        tx_tone=tx_tone,
+                        color=1 if digital else 0,
+                        rx_group=1,
+                        contact=1,
+                        slot=1
+                    )
+                    self.records.append(channel)
+
+    def add_regular_freqs(self, name:str, freqs: list):
+        for i, freq in enumerate(freqs):
+            channel = ChannelsFactory.ChannelRecord(
+                name="{} {}".format(name, i),
+                rx_freq=freq,
+                tx_freq=freq,
+                mode="Analog",
+                power='Low',
+                rx_tone='None',
+                tx_tone='None',
+                color=0,
+                rx_group=0,
+                contact=0,
+                slot=1
+            )
+            self.records.append(channel)
 
 
     def as_csv(self, query_json: dict):
@@ -49,14 +148,43 @@ class ChannelsFactory:
         head = "Number,Name,Rx Freq,Tx Freq,Ch Mode,Power,Rx Tone,Tx Tone,"\
                "Color Code,Rx Group List,Contact,Repeater Slot\r\n"
 
-        line = "{number},{name},{rx_freq},{tx_freq},{mode},{power},{rx_tone},{tx_tone},{color},{rx_group},{contact},{slot}\r\n"
+        line = "{number},{name},{rx_freq:0<10},{tx_freq:0<10},{mode},{power},"\
+               "{rx_tone},{tx_tone},{color},{rx_group},{contact},{slot}\r\n"
         buf = [head]
 
+        self.records.clear()
+        # add repeaters
+        rep = query_json.get('repeaters', {})
+        self.add_repeaters(
+            rep.get('bands', []),
+            rep.get('modes', []),
+            rep.get('areas', [])
+        )
 
-        # for i, rec_id in enumerate(records_set):
-        #     record = records_set[rec_id]
-        #     buf.append(line.format(
-        #         ...
-        #     ))
+        # add gov services
+        for service in query_json.get('services', []):
+            self.add_regular_freqs(
+                service,
+                query_json.get('services',{}).get(service, [])
+            )
+
+        # add PMR
+        self.add_regular_freqs('PMR', query_json.get('pmr',[]))
+
+        for i, rec in enumerate(self.records):
+            buf.append(line.format(
+                number=i,
+                name=rec.name,
+                rx_freq=rec.rx_freq,
+                tx_freq=rec.tx_freq,
+                mode=rec.mode,
+                power=rec.power,
+                rx_tone=rec.rx_tone,
+                tx_tone=rec.tx_tone,
+                color=rec.color,
+                rx_group=rec.rx_group,
+                contact=rec.contact,
+                slot=rec.slot
+            ))
 
         return buf

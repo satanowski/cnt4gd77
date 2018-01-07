@@ -24,11 +24,14 @@ License: GNU AGPLv3
 """
 
 import logging as log
+import io
+import zipfile
 
 from flask import Flask, Response, render_template, abort
 import msgpack
 
 from contacts import ContactsFactory
+from channels import ChannelsFactory
 import utils
 
 utils.load_config()
@@ -37,7 +40,10 @@ log.basicConfig(level=log.DEBUG)
 
 app = Flask(__name__)  # pylint: disable=C0103
 contacts = ContactsFactory()  # pylint: disable=C0103
+channels = ChannelsFactory()  # pylint: disable=C0103
 
+flasklog = log.getLogger('werkzeug')
+flasklog.setLevel(log.ERROR)
 
 @app.route("/", methods=["GET"])
 def index():
@@ -48,8 +54,8 @@ def index():
         sp_talkgroups=utils.CONFIG['sp_talk_groups'],
         additionals=utils.CONFIG['additional_contacts'],
         additional_tgs=utils.CONFIG['additional_talkgroups'],
-        bands=util.REPS.bands,
-        modes=util.REPS.modes,
+        bands=utils.REPS.bands,
+        modes=utils.REPS.modes,
         bands_supported=utils.CONFIG['supported_bands'],
         modes_supported=utils.CONFIG['supported_modes'],
         gov_services=utils.CONFIG['gov_services'],
@@ -62,19 +68,31 @@ def get_csv_file(query):
     """Serve the file."""
     try:
         query = msgpack.unpackb(bytearray.fromhex(query), encoding='utf-8')
-        log.debug(query)
+        # log.debug(query)
     except (msgpack.exceptions.UnpackValueError, ValueError) as error:
         log.error("Wrong query: %s", error)
         abort(404)
 
     contacts_csv = contacts.as_csv(query['contacts'])
     if utils.are_channels_requested(query):
-        pass  # to-do: generate csv for channels and make zip
+        channels_csv = channels.as_csv(query['channels'])
+        a_mem_file = io.BytesIO()
+        with zipfile.ZipFile(a_mem_file,'w') as zip_file:
+            zip_file.writestr('contacts.csv', ''.join(contacts_csv))
+            zip_file.writestr('channels.csv', ''.join(channels_csv))
+
+        return Response(
+            a_mem_file.getvalue(),
+            mimetype="application/zip",
+            headers={"Content-disposition": "attachment; filename=gd77.zip"}
+        )
 
     return Response(
         contacts_csv,
         mimetype="text/csv",
-        headers={"Content-disposition": "attachment; filename=gd77-contacts.csv"}
+        headers={
+            "Content-disposition": "attachment; filename=gd77-contacts.csv"
+        }
     )
 
 

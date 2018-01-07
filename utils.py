@@ -29,13 +29,13 @@ import logging as log
 import yaml
 
 from kab import KAB
-from przemienniki import PrzemienikiWrapper
+from przemienniki import PrzemiennikiWrapper
 
 
 log.basicConfig(level=log.DEBUG)
 
 CONFIG = {}
-REPS = PrzemienikiWrapper()
+REPS = PrzemiennikiWrapper()
 
 def load_config():
     """Load config file."""
@@ -65,8 +65,8 @@ def load_config():
 
 def are_channels_requested(query):
     """Check if user requested any channel."""
-    any_repater = any(query.get('channel',{}).get('repeaters', {}).values())
-    any_service = any(query.get('channel',{}).get('services', {}).values())
-    any_pmr = query.get('channel',{}).get('pmr', False)
+    any_repeater = any(query.get('channels',{}).get('repeaters', {}).values())
+    any_service = any(query.get('channels',{}).get('services', {}).values())
+    any_pmr = query.get('channels',{}).get('pmr', False)
 
-    return any([any_repater, any_service, any_pmr])
+    return any([any_repeater, any_service, any_pmr])

@@ -13,9 +13,9 @@
 		      <div class="container">
 
 		        <div id="navbarMenuHeroC" class="navbar-menu">
-		          <div class="navbar-end">
+		          <div class="navbar-end" id="about_btn">
 		            <a class="navbar-item">
-		              About
+		              Info
 		            </a>
 		            <span class="navbar-item">
 		            	&nbsp;
@@ -32,9 +32,6 @@
 		      <h1 class="title">
 		        Generator listy kontaktów dla radia GD-77
 		      </h1>
-		      <h2 class="subtitle">
-		        na bazie danych z <a href="http://ham-digital.net">http://ham-digital.net</a>
-		      </h2>
 		    </div>
 		  </div>
 
@@ -192,7 +189,7 @@
 					<div class="columns">
 						<div class="column is-one-quarter has-text-left">
 							<div class="notification is-warning">
-							  Symbolem <i class="fa fa-times" aria-hidden="true"></i> oznaczone są pasma i tryby nie obsługiwane przez radio GD-77.
+							  Symbolem <i class="fa fa-times" aria-hidden="true"></i> oznaczone są pasma i&nbsp;tryby nie obsługiwane przez radio <strong>GD-77</strong>.
 							</div>
 						</div>
 
@@ -248,8 +245,8 @@
 					<h3 class="title is-3">Służby</h3>
 					<div class="columns">
 						<div class="column is-one-quarter has-text-left">
-							<div class="notification is-danger">
-							  <strong>Pamiętaj!</strong> O ile nasłuch niezabezpieczonych częstotliwości używanych przez służby państwowe jest legalny, o tyle udostępnianie pozyskanych w ten sposób informacji jest już <strong>surowo zabronione</strong>! To samo dotyczy nadawania na tych częstotliwościach.
+							<div class="notification is-orange">
+							  <i class="fa fa-exclamation-triangle" aria-hidden="true"></i> <strong>Pamiętaj!</strong> O ile nasłuch niezabezpieczonych częstotliwości używanych przez służby państwowe jest legalny, o tyle udostępnianie pozyskanych w ten sposób informacji jest już <strong>surowo zabronione</strong>! To samo dotyczy nadawania na tych częstotliwościach.
 							</div>
 						</div>
 
@@ -284,8 +281,8 @@
 					<h3 class="title is-3">PMR</h3>
 					<div class="columns">
 						<div class="column is-one-quarter has-text-left">
-							<div class="notification is-danger">
-							  <strong>Pamiętaj!</strong> Nadawanie na częstotliwościach PMR radiem GD-77 <strong>jest w Polsce zakazane</strong>!
+							<div class="notification is-orange">
+							  <i class="fa fa-exclamation-triangle" aria-hidden="true"></i> <strong>Pamiętaj!</strong> Nadawanie na częstotliwościach PMR radiem GD-77 <strong>jest w Polsce zakazane</strong>!
 							</div>
 						</div>
 
@@ -318,7 +315,7 @@
 					<div class="columns">
 						<div class="column is-one-quarter has-text-left">
 							<div class="notification is-warning">
-							  Koniec ustawiania. Czas generowania. Kliknij w guzik aby pobrać plik.
+							  Koniec ustawiania. Czas generowania. Kliknij w guzik aby pobrać plik.<br>
 							</div>
 						</div>
 
@@ -344,6 +341,7 @@
 			<div class="container">
 				<div class="content has-text-centered">
 					<p>2017-2018 © sp5drs</p>
+					<p>Dane źródłowe pochodzą ze stron: <a href="http://ham-digital.net">ham-digital.net</a> oraz <a href="http://przemienniki.net">przemienniki.net</a>.</p>
 				</div>
 			</div>
 		</footer>
@@ -361,6 +359,22 @@
 		    </section>
 		  </div>
 		</div>
+
+		<div class="modal" id="about">
+		  <div class="modal-background"></div>
+		  <div class="modal-card">
+		    <header class="modal-card-head">
+		      <p class="modal-card-title"><i class="fa fa-info-circle" aria-hidden="true"></i></p>
+		    </header>
+		    <section class="modal-card-body">
+		      Tu kiedyś będzie piękny esej na temat tego, po co powstało to narzędzie, kto je robił i czego słuchał w trakcie pracy <i class="fa fa-smile-o" aria-hidden="true"></i>
+		    </section>
+		    <footer class="modal-card-foot has-text-centered">
+		      <button class="button is-info" id="about_close">Schowaj</button>
+		    </footer>
+		  </div>
+		</div>
+
 	</div>
 
 </section>

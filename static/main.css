@@ -26,3 +26,8 @@
 .is-bordered {
     border:1px solid #ccc;
 }
+
+.is-orange {
+    background-color: hsl(14, 100%, 53%) !important;
+    color:white !important;
+}

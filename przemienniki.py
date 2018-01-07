@@ -31,14 +31,16 @@ from collections import namedtuple
 from lxml import etree
 from requests import get
 
+
 log.basicConfig(level=log.DEBUG)
 
 
-class PrzemienikiWrapper:
+class PrzemiennikiWrapper:
     """Simple wrapper for https://przemienniki.net API."""
 
     API_URL = 'https://przemienniki.net/export/rxf.xml?country=pl&onlyworking'
-    REP = namedtuple('Repeater', 'sign,modes,working,bands,freqs')
+    REP = namedtuple('Repeater', 'sign,modes,working,bands,freqs,activation,'\
+                                 'tones')
 
     def __init__(self):
         self.repeaters = []
@@ -57,13 +59,32 @@ class PrzemienikiWrapper:
         )
 
     @staticmethod
+    def _merge_dicts(dicts):
+        if len(dicts) == 2:
+            a, b = dicts
+            return {**a, **b}
+        else:
+            return dicts
+
+    @staticmethod
     def _extract_repeater_data(obj):
-        return PrzemienikiWrapper.REP(
+
+        tones = PrzemiennikiWrapper._ext_many_attr(obj, 'ctcss', 'type')
+        if len(tones) > 1:
+            tones = PrzemiennikiWrapper._merge_dicts(tones)
+        elif len(tones) == 1:
+            tones = tones[0]
+        else:
+            tones = {}
+
+        return PrzemiennikiWrapper.REP(
             sign=obj.find('qra').text,
-            modes=PrzemienikiWrapper._ext_many(obj, 'mode'),
+            modes=PrzemiennikiWrapper._ext_many(obj, 'mode'),
             working=obj.find('statusInt').text == '1',
-            bands=PrzemienikiWrapper._ext_many(obj, 'band'),
-            freqs=PrzemienikiWrapper._ext_many_attr(obj, 'qrg', 'type')
+            bands=PrzemiennikiWrapper._ext_many(obj, 'band'),
+            freqs=PrzemiennikiWrapper._ext_many_attr(obj, 'qrg', 'type'),
+            activation=PrzemiennikiWrapper._ext_many(obj, 'activation'),
+            tones=tones
         )
 
     def get_repeaters(self):

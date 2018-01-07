@@ -60,6 +60,16 @@ error_dismiss.addEventListener("click", function(){
     error_modal.classList.toggle( "is-active");
 });
 
+// About
+var about_modal = document.getElementById("about");
+var about_dismiss = document.getElementById("about_close");
+
+about_dismiss.addEventListener("click", function(){
+    about_modal.classList.toggle( "is-active");
+});
+document.getElementById('about_btn').addEventListener("click",function(){about_modal.classList.toggle('is-active')});
+
+
 
 // Storage
 var priocals = document.getElementById("priocals");

@@ -95,7 +95,7 @@ class ContactsFactory:
         return self.records.get(dmr_id, None)
 
     def _simple_dmr_rec(self, dmrid: str, name: str):
-        return self.DMRRecord(
+        return self.ContactRecord(
             num=0,
             callsign=name.strip(),
             dmrid=str(dmrid).strip(),
