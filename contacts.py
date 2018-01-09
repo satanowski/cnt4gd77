@@ -149,14 +149,18 @@ class ContactsFactory:
     def add_areatalkgroups(self, rec_set: dict, tg_list: list):
         """Add TG for areas."""
 
-        for tg_id in map(int, tg_list):
-            a_tg = list(filter(
-                lambda r: r['id'] == tg_id,
-                utils.CONFIG['sp_talk_groups'].get('items', [])
-            ))
+        log.debug("TGs %s", tg_list)
+        available_tgs = sorted(
+            utils.CONFIG['sp_talk_groups'].get('items', []) +
+            utils.CONFIG['additional_talkgroups'],
+            key=lambda r: r['id']
+        )
 
+        for tg_id in map(int, tg_list):
+            a_tg = list(filter(lambda r: r['id'] == tg_id, available_tgs))
             if not a_tg:
                 continue
+
             a_tg = a_tg[0]
             rec_set[a_tg['id']] = \
                 self._simple_dmr_rec(a_tg['id'], a_tg['name'])
