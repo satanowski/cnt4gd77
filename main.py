@@ -23,6 +23,8 @@ Copyright (C) 2017-2018 Satanowski <satanowski@gmail.com>
 License: GNU AGPLv3
 """
 
+__version__ = 0,9,0
+
 import logging as log
 import io
 import zipfile
