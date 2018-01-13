@@ -1,5 +1,5 @@
 #
-# Copyright 2017 by Satanowski
+# Copyright 2017-2018 by Satanowski
 #
 
 # This program is free software: you can redistribute it and/or modify it under
@@ -19,59 +19,35 @@
 """
 CSV converter hamdigital <-> gd-77
 
-Copyright (C) 2017 Satanowski <satanowski@gmail.com>
+Copyright (C) 2017-2018 Satanowski <satanowski@gmail.com>
 License: GNU AGPLv3
 """
 
 from collections import namedtuple, OrderedDict
 from itertools import product
-from pathlib import Path
 import logging as log
 import sys
 import re
 
 from requests import get
-from flask import Flask, Response, render_template, abort
-import yaml
-import msgpack
+
+import utils
 
 log.basicConfig(level=log.DEBUG)
 
 
-class DrsDMRConverter:
+class ContactsFactory:
     """Process raw CSV from ham-digital."""
 
     URL = "http://dmr.ham-digital.net/user_by_call.php?id=260"
-    DMRRecord = namedtuple("DMRrec", "num,callsign,dmrid,name,country,ctry")
-
-    def _load_config(self):
-        """Load config file."""
-        path = Path.cwd() / "config.yaml"
-        self.config = None
-        if not path.exists():
-            log.error('No config file! Exiting!')
-            sys.exit(1)
-        try:
-            with open(path) as cfg_file:
-                self.config = yaml.load(cfg_file)
-                log.debug('Config loaded')
-        except IOError:
-            log.error('Cannot read config file! Exiting!')
-            sys.exit(1)
-        if not self.config:
-            log.error('Empty config! Exiting!r')
-            sys.exit(1)
-
-        self.SP_PREFIX_LIST = self.config.get('sp_prefixy', [])
-        self.TALK_GROUPS = self.config.get('sp_talk_groups', {})
-        self.ADDITIONAL_CONTACTS = self.config.get('additional_contacts', [])
+    ContactRecord = namedtuple(
+        "ContactRecord",
+        "num,callsign,dmrid,name,country,ctry"
+    )
 
     def __init__(self):
-        self.SP_PREFIX_LIST = [] 
-        self.TALK_GROUPS = []
-        self.ADDITIONAL_CONTACTS = []
         self.records = {}
-        self._load_config()
+        self.ignored_contacts = []
         self._get_records()
 
     def _get_records(self):
@@ -84,7 +60,7 @@ class DrsDMRConverter:
             items = list(map(str.strip, filter(None, line.split(";"))))
             if len(items) < 6:
                 continue
-            dmr_rec = self.DMRRecord(*items)
+            dmr_rec = self.ContactRecord(*items)
             self.records[dmr_rec.dmrid] = dmr_rec
 
     def _sieve(self, prefixes, areas):
@@ -99,9 +75,16 @@ class DrsDMRConverter:
         )
 
     def _read_special_group(self, name):
-        if not name in self.config:
+        # special case for SP5KAB
+        if name.lower() == 'sp5kab':
+            group = utils.CONFIG['sp5kab']
+        else:
+            group = utils.CONFIG.get(name)
+
+        if not group:
             return None
-        return sorted(self.config.get(name), key=lambda sign: sign[2:])
+
+        return sorted(group, key=lambda sign: sign[2:])
 
     def _get_rec_by_call(self, callsign):
         for rec in self.records:
@@ -113,7 +96,7 @@ class DrsDMRConverter:
         return self.records.get(dmr_id, None)
 
     def _simple_dmr_rec(self, dmrid: str, name: str):
-        return self.DMRRecord(
+        return self.ContactRecord(
             num=0,
             callsign=name.strip(),
             dmrid=str(dmrid).strip(),
@@ -126,13 +109,14 @@ class DrsDMRConverter:
                                         additionals: list):
         """From given list of additional contacts filter these that are numeric
         and are present in config file. Add them to given rec_set dict."""
-
         records_to_add = filter(
             lambda r: str(r['id']) in additionals and str(r['id']).isnumeric(),
-            self.ADDITIONAL_CONTACTS
+            utils.CONFIG['additional_contacts']
         )
 
         for record in records_to_add:
+            if record['id'] in self.ignored_contacts:
+                continue
             rec_set[record['id']] = self._simple_dmr_rec(record['id'],
                                                          record['name'])
 
@@ -156,6 +140,8 @@ class DrsDMRConverter:
             if not spec_group:
                 continue
             for callsign in spec_group:
+                if callsign in self.ignored_contacts:
+                    continue
                 rec = self._get_rec_by_call(callsign)
                 if rec:
                     rec_set[rec.dmrid] = rec
@@ -163,14 +149,18 @@ class DrsDMRConverter:
     def add_areatalkgroups(self, rec_set: dict, tg_list: list):
         """Add TG for areas."""
 
-        for tg_id in map(int, tg_list):
-            a_tg = list(filter(
-                lambda r: r['id'] == tg_id,
-                self.TALK_GROUPS.get('items', [])
-            ))
+        log.debug("TGs %s", tg_list)
+        available_tgs = sorted(
+            utils.CONFIG['sp_talk_groups'].get('items', []) +
+            utils.CONFIG['additional_talkgroups'],
+            key=lambda r: r['id']
+        )
 
+        for tg_id in map(int, tg_list):
+            a_tg = list(filter(lambda r: r['id'] == tg_id, available_tgs))
             if not a_tg:
                 continue
+
             a_tg = a_tg[0]
             rec_set[a_tg['id']] = \
                 self._simple_dmr_rec(a_tg['id'], a_tg['name'])
@@ -185,7 +175,10 @@ class DrsDMRConverter:
 
         for rec_id in filter(lambda rec_id: rec_id not in rec_set,
                              rec_ids_sorted):
-            rec_set[rec_id] = self.records[rec_id]
+            a_record = self.records[rec_id]
+            if a_record.callsign in self.ignored_contacts:
+                continue
+            rec_set[rec_id] = a_record
 
 
     def as_csv(self, query_json: dict):
@@ -195,15 +188,21 @@ class DrsDMRConverter:
         buf = [head]
 
         records_set = OrderedDict()
+        self.ignored_contacts = list(map(
+            str.upper,
+            re.split('[,|.| |;]', query_json.get('igno',""))
+        ))
+
         self.add_additional_contacts_numeric(records_set, query_json['adds'])
-        self.add_areatalkgroups(records_set, query_json.get('tgs') or [])
-        self.add_priority_contacts(records_set, query_json['options']['prio'])
+        self.add_areatalkgroups(records_set, query_json['tgs'] or [])
+        self.add_priority_contacts(records_set, query_json['prio'])
         self.add_additional_contacts_alpha(records_set, query_json['adds'])
-        self.add_contacts_by_area_and_prefix(
-            records_set,
-            query_json.get('sp_prefix') or self.SP_PREFIX_LIST,
-            query_json.get('sp_area') or range(1, 9)
-        )
+        if all(map(query_json.get, ['sp_area', 'sp_prefix'])):
+            self.add_contacts_by_area_and_prefix(
+                records_set,
+                query_json.get('sp_prefix'),
+                query_json.get('sp_area')
+            )
 
         for i, rec_id in enumerate(records_set):
             record = records_set[rec_id]
@@ -215,37 +214,3 @@ class DrsDMRConverter:
             ))
 
         return buf
-
-
-app = Flask(__name__)  # pylint: disable=C0103
-dmr = DrsDMRConverter()  # pylint: disable=C0103
-
-@app.route("/", methods=["GET"])
-def index():
-    """Serve the main page."""
-    return render_template(
-        'index.html',
-        prefixy=dmr.SP_PREFIX_LIST,
-        talkgroups=dmr.TALK_GROUPS,
-        additionals=dmr.ADDITIONAL_CONTACTS
-    )
-
-
-@app.route("/csv/<query>", methods=["GET"])
-def get_csv_file(query):
-    """Serve the file."""
-    try:
-        query = msgpack.unpackb(bytearray.fromhex(query), encoding='utf-8')
-    except (msgpack.exceptions.UnpackValueError, ValueError) as error:
-        log.error("Wrong query: %s", error)
-        abort(404)
-
-    return Response(
-        dmr.as_csv(query),
-        mimetype="text/csv",
-        headers={"Content-disposition": "attachment; filename=gd77-contacts.csv"}
-    )
-
-
-if __name__ == "__main__":
-    app.run(host='0.0.0.0', debug=True)
