@@ -38,7 +38,7 @@ import utils
 now = datetime.utcnow()
 __VERSION__ = 0,9,3
 __LAST_UPDATE__ = "2018-01-13"
-__LAST_DATA_UPDATE__ = "{d} {h}:{m}".format(
+__LAST_DATA_UPDATE__ = "{d} {h:02d}:{m:02d}".format(
     d=now.date().isoformat(),
     h=now.time().hour,
     m=now.time().minute
