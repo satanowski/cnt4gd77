@@ -45,7 +45,7 @@
 				   <li class="navbutton" section="speccont"><a><span class="icon is-small"><i class="fa fa-user"></i></span><span>Kontakty specjalne</span></a></li>
 				   <li class="navbutton" section="channels"><a><span class="icon is-small"><i class="fa fa-server"></i></span><span>Kanały</span></a></li>
 				   <li class="navbutton" section="generate"><a><span class="icon is-small"><i class="fa fa-magic"></i></span><span>Generuj</span></a></li>
-				   <li class="navbutton" section="comments"><a href=#disqus_thread""><span class="icon is-small"><i class="fa fa-commenting-o"></i></span><span>Komentarze</span></a></li>
+				   <li class="navbutton" section="comments"><a><span class="icon is-small"><i class="fa fa-commenting-o"></i></span><span>Komentarze</span></a></li>
 		      </div>
 		    </nav>
 		  </div>
@@ -201,11 +201,11 @@
 									<td><strong>Pasma</strong></td>
 									<td>
 										{% for band in bands %}
-										<label class="checkbox">
+										<label class="checkbox{%if band not in bands_supported%} disabled{% endif %}">
 											{%if band in bands_supported%}
-											<input type="checkbox" value="{{band}}" class="band_checkbox">&nbsp;{{band}}&nbsp;
+											<input type="checkbox" value="{{band}}" class="band_checkbox" checked>&nbsp;{{band}}&nbsp;
 											{% else %}
-											<i class="fa fa-times" aria-hidden="true"></i>&nbsp;{{band}}&nbsp;
+											<i class="fa fa-times-circle-o" aria-hidden="true"></i>&nbsp;{{band}}&nbsp;
 											{% endif %}
 										</label>
 										{% endfor %}
@@ -217,11 +217,11 @@
 									<td><strong>Modulacje/tryby</strong></td>
 									<td>
 										{% for mode in modes %}
-											<label class="checkbox">
+											<label class="checkbox{% if mode not in modes_supported %} disabled{% endif%}">
 											{% if mode in modes_supported %}
-											<input type="checkbox" value="{{mode}}" class="mode_checkbox">&nbsp;{{modes_supported[mode]}}&nbsp;
+											<input type="checkbox" value="{{mode}}" class="mode_checkbox" checked>&nbsp;{{modes_supported[mode]}}&nbsp;
 											{% else %}
-											<i class="fa fa-times" aria-hidden="true"></i>&nbsp;{{mode}}&nbsp;
+											<i class="fa fa-times-circle-o" aria-hidden="true"></i>&nbsp;{{mode}}&nbsp;
 											{% endif%}
 											</label>
 										{% endfor %}
@@ -238,6 +238,17 @@
 											</label>
 										{% endfor %}
 									</td>
+								</tr>
+
+								<tr>
+									<td><i class="fa fa-filter" aria-hidden="true">&nbsp;</i></td>
+									<td><strong>Opcje</strong></td>
+									<td>
+										<label class="checkbox">
+											<input type="checkbox" class="digi_first_checkbox" checked>&nbsp;Przemienniki cyfrowe na początku listy&nbsp;
+										</label>
+									</td>
+								</tr>
 							</table>
 						</div>
 					</div>

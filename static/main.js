@@ -111,9 +111,9 @@ send.addEventListener("click", function(){
             repeaters: {
                 bands: rep_bands.filter(cb=>cb.checked).map(cb=>cb.value),
                 modes: rep_modes.filter(cb=>cb.checked).map(cb=>cb.value),
-                areas: rep_areas.filter(cb=>cb.checked).map(cb=>cb.value)
+                areas: rep_areas.filter(cb=>cb.checked).map(cb=>cb.value),
+                digi_first: document.getElementsByClassName('digi_first_checkbox')[0].checked
             },
-
             services:[],
             pmr: []
         }

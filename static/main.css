@@ -31,3 +31,7 @@
     background-color: hsl(14, 100%, 53%) !important;
     color:white !important;
 }
+
+label.disabled {
+    color: #ccc;
+}

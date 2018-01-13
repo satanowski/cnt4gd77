@@ -85,8 +85,13 @@ class ChannelsFactory:
         }
 
 
-    def add_repeaters(self, bands: list, modes: list, areas: list):
+    def add_repeaters(self, bands: list, modes: list, areas: list,
+                      digi_first: bool):
         """Add Repeaters by given criterion."""
+        digital_reps = []
+        analog_reps = []
+        sack = []
+
         for repeater in utils.REPS.repeaters:
             band_match = any([band.upper() in repeater.bands for band in bands])
             mode_match = any([mode.upper() in repeater.modes for mode in modes])
@@ -123,7 +128,18 @@ class ChannelsFactory:
                         contact=1,
                         slot=1
                     )
-                    self.records.append(channel)
+                    if digi_first:
+                        if digital:
+                            digital_reps.append(channel)
+                        else:
+                            analog_reps.append(channel)
+                    else:
+                        sack.append(channel)
+        if digi_first:
+            self.records.extend(digital_reps)
+            self.records.extend(analog_reps)
+        else:
+            self.records.extend(sack)
 
     def add_regular_freqs(self, name:str, freqs: list):
         for i, freq in enumerate(freqs):
@@ -156,9 +172,10 @@ class ChannelsFactory:
         # add repeaters
         rep = query_json.get('repeaters', {})
         self.add_repeaters(
-            rep.get('bands', []),
-            rep.get('modes', []),
-            rep.get('areas', [])
+            bands=rep.get('bands', []),
+            modes=rep.get('modes', []),
+            areas=rep.get('areas', []),
+            digi_first=rep.get('digi_first', True)
         )
 
         # add gov services
