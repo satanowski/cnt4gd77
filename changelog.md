@@ -3,6 +3,7 @@
 ## [0.9.3] - 2018-01-13
 ### Dodane
 - Nowa opcja: przemienniki cyfrowe jako pierwsze
+- Nowa opcja: dublowanie wpisów dla przemieników DMR (slot 1 i 2)
 
 ### Zmienione
 - Poprawione usability formularza kanałów

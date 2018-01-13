@@ -149,7 +149,6 @@ class ContactsFactory:
     def add_areatalkgroups(self, rec_set: dict, tg_list: list):
         """Add TG for areas."""
 
-        log.debug("TGs %s", tg_list)
         available_tgs = sorted(
             utils.CONFIG['sp_talk_groups'].get('items', []) +
             utils.CONFIG['additional_talkgroups'],

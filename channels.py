@@ -84,9 +84,15 @@ class ChannelsFactory:
             'tx': tx[0]
         }
 
+    @staticmethod
+    def duplicate_channel(channel, updated):
+        orig = dict(channel._asdict())
+        orig.update(updated)
+        return ChannelsFactory.ChannelRecord(**orig)
+
 
     def add_repeaters(self, bands: list, modes: list, areas: list,
-                      digi_first: bool):
+                      digi_first: bool, digi_double: bool):
         """Add Repeaters by given criterion."""
         digital_reps = []
         analog_reps = []
@@ -128,13 +134,32 @@ class ChannelsFactory:
                         contact=1,
                         slot=1
                     )
+
+                    if digital and digi_double: # additional channel for 2 slot
+                        channel2 = ChannelsFactory.duplicate_channel(
+                            channel,
+                            {
+                                'name': channel.name + " [2]",
+                                'slot': 2
+                            }
+                        )
+
+                        channel = ChannelsFactory.duplicate_channel(
+                            channel,
+                            {'name': repeater.sign + ' [1]'}
+                        )
+
                     if digi_first:
                         if digital:
                             digital_reps.append(channel)
+                            if digi_double:
+                                digital_reps.append(channel2)
                         else:
                             analog_reps.append(channel)
                     else:
                         sack.append(channel)
+                        if digital and digi_double:
+                            sack.append(channel2)
         if digi_first:
             self.records.extend(digital_reps)
             self.records.extend(analog_reps)
@@ -175,7 +200,8 @@ class ChannelsFactory:
             bands=rep.get('bands', []),
             modes=rep.get('modes', []),
             areas=rep.get('areas', []),
-            digi_first=rep.get('digi_first', True)
+            digi_first=rep.get('digi_first', True),
+            digi_double=rep.get('digi_double'),
         )
 
         # add gov services
