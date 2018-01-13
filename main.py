@@ -23,11 +23,10 @@ Copyright (C) 2017-2018 Satanowski <satanowski@gmail.com>
 License: GNU AGPLv3
 """
 
-__version__ = 0,9,0
-
 import logging as log
 import io
 import zipfile
+from datetime import datetime
 
 from flask import Flask, Response, render_template, abort
 import msgpack
@@ -35,6 +34,16 @@ import msgpack
 from contacts import ContactsFactory
 from channels import ChannelsFactory
 import utils
+
+now = datetime.now()
+__VERSION__ = 0,9,1
+__LAST_UPDATE__ = "2018-01-13"
+__LAST_DATA_UPDATE__ = "{d} {h}:{m}".format(
+    d=now.date().isoformat(),
+    h=now.time().hour,
+    m=now.time().minute
+)
+
 
 utils.load_config()
 
@@ -61,7 +70,10 @@ def index():
         bands_supported=utils.CONFIG['supported_bands'],
         modes_supported=utils.CONFIG['supported_modes'],
         gov_services=utils.CONFIG['gov_services'],
-        pmr=utils.CONFIG['pmr']
+        pmr=utils.CONFIG['pmr'],
+        version='.'.join(map(str, list(__VERSION__))),
+        last_update=__LAST_UPDATE__,
+        last_data=__LAST_DATA_UPDATE__
     )
 
 

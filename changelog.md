@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.9.1] - 2018-01-13
+## Dodane
+- Favicony
+- Informacja o wersji strony i danych
 
 ## [0.9.0] - 2018-01-09
 ### Dodane
