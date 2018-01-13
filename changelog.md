@@ -6,6 +6,7 @@
 
 ### Zmienione
 - Poprawione usability formularza kanałów
+- Info pokazuje czas UTC
 
 
 ## [0.9.2] - 2018-01-13

@@ -35,7 +35,7 @@ from contacts import ContactsFactory
 from channels import ChannelsFactory
 import utils
 
-now = datetime.now()
+now = datetime.utcnow()
 __VERSION__ = 0,9,3
 __LAST_UPDATE__ = "2018-01-13"
 __LAST_DATA_UPDATE__ = "{d} {h}:{m}".format(
