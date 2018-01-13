@@ -128,7 +128,7 @@ class ChannelsFactory:
     def add_regular_freqs(self, name:str, freqs: list):
         for i, freq in enumerate(freqs):
             channel = ChannelsFactory.ChannelRecord(
-                name="{} {}".format(name, i),
+                name="{} {}".format(name, i+1),
                 rx_freq=freq,
                 tx_freq=freq,
                 mode="Analog",
@@ -148,8 +148,8 @@ class ChannelsFactory:
         head = "Number,Name,Rx Freq,Tx Freq,Ch Mode,Power,Rx Tone,Tx Tone,"\
                "Color Code,Rx Group List,Contact,Repeater Slot\r\n"
 
-        line = "{number},{name},{rx_freq:0<10},{tx_freq:0<10},{mode},{power},"\
-               "{rx_tone},{tx_tone},{color},{rx_group},{contact},{slot}\r\n"
+        line = "{number},{name},\"{rx_freq:0<9}\",\"{tx_freq:0<9}\",{mode},{power},"\
+               "\"{rx_tone}\",\"{tx_tone}\",{color},{rx_group},{contact},{slot}\r\n"
         buf = [head]
 
         self.records.clear()
@@ -175,12 +175,12 @@ class ChannelsFactory:
             buf.append(line.format(
                 number=i,
                 name=rec.name,
-                rx_freq=rec.rx_freq,
-                tx_freq=rec.tx_freq,
+                rx_freq=str(rec.rx_freq).replace('.', ','),
+                tx_freq=str(rec.tx_freq).replace('.', ','),
                 mode=rec.mode,
                 power=rec.power,
-                rx_tone=rec.rx_tone,
-                tx_tone=rec.tx_tone,
+                rx_tone=str(rec.rx_tone).replace('.', ','),
+                tx_tone=str(rec.tx_tone).replace('.', ','),
                 color=rec.color,
                 rx_group=rec.rx_group,
                 contact=rec.contact,

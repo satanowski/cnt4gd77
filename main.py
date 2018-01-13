@@ -36,7 +36,7 @@ from channels import ChannelsFactory
 import utils
 
 now = datetime.now()
-__VERSION__ = 0,9,1
+__VERSION__ = 0,9,2
 __LAST_UPDATE__ = "2018-01-13"
 __LAST_DATA_UPDATE__ = "{d} {h}:{m}".format(
     d=now.date().isoformat(),
