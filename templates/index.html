@@ -189,7 +189,7 @@
 					<div class="columns">
 						<div class="column is-one-quarter has-text-left">
 							<div class="notification is-warning">
-							  Symbolem <i class="fa fa-times" aria-hidden="true"></i> oznaczone są pasma i&nbsp;tryby nieobsługiwane przez radio <strong>GD-77</strong>.
+							  Symbolem <i class="fa fa-times-circle-o" aria-hidden="true"></i> oznaczone są pasma i&nbsp;tryby nieobsługiwane przez radio <strong>GD-77</strong>.
 							</div>
 						</div>
 
@@ -305,12 +305,13 @@
 						</div>
 
 						<div class="column has-text-left">
+								<h5 class="title is-5">Analog</h5>
 							<table class="table is-hoverable">
 								<thead>
 									<tr>
 										<td colspan="3">
 											<label class="checkbox">
-												<input type="checkbox" value="" id="pmr_sel_all">&nbsp;Wszystkie&nbsp;
+												<input type="checkbox" value="" id="apmr_sel_all">&nbsp;Wszystkie&nbsp;
 											</label>
 										</td>
 									</tr>
@@ -318,10 +319,34 @@
 								<tbody>
 									{% for freq in pmr %}
 										<tr>
-											<td><input type="checkbox" value="{{freq}}" class="pmr_checkbox"></td>
+											<td><input type="checkbox" value="{{freq}}" class="apmr_checkbox"></td>
 											<td>{{'%3.05f' % freq}}</td>
 											<td>MHz</td>
 										</tr>
+									{% endfor %}
+								</tbody>
+							</table>
+						</div>
+
+						<div class="column has-text-left">
+							<h5 class="title is-5">Digital</h5>
+							<table class="table is-hoverable">
+								<thead>
+									<tr>
+										<td colspan="3">
+											<label class="checkbox">
+												<input type="checkbox" value="" id="dpmr_sel_all">&nbsp;Wszystkie&nbsp;
+											</label>
+										</td>
+									</tr>
+								</thead>
+								<tbody>
+									{% for freq in pmr_digi %}
+									<tr>
+										<td><input type="checkbox" value="{{freq}}" class="dpmr_checkbox"></td>
+										<td>{{'%3.05f' % freq}}</td>
+										<td>MHz</td>
+									</tr>
 									{% endfor %}
 								</tbody>
 							</table>

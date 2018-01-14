@@ -212,7 +212,9 @@ class ChannelsFactory:
             )
 
         # add PMR
-        self.add_regular_freqs('PMR', query_json.get('pmr',[]))
+        self.add_regular_freqs('PMR', query_json.get('apmr',[]))
+        # add digital PMR
+        self.add_regular_freqs('PMR Digi', query_json.get('dpmr',[]))
 
         for i, rec in enumerate(self.records):
             buf.append(line.format(

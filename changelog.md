@@ -1,6 +1,9 @@
 # Changelog
 
 ## [0.9.4] - 2018-01-14
+### Dodane
+- PMR Digi
+
 ### Zmienione
 - Poprawiony błąd z zamienionymi częstotliwościami przemienników
 

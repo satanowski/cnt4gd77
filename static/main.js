@@ -33,7 +33,8 @@ var area_sel_all = document.getElementById('area_all');
 // Channels
 var services_group_checkboxes = Array.from(document.getElementsByClassName('service_checkbox_all'));
 var service_checkboxes = Array.from(document.getElementsByClassName('service_checkbox'));
-var pmr_checkboxes = Array.from(document.getElementsByClassName('pmr_checkbox'));
+var apmr_checkboxes = Array.from(document.getElementsByClassName('apmr_checkbox'));
+var dpmr_checkboxes = Array.from(document.getElementsByClassName('dpmr_checkbox'));
 
 services_group_checkboxes.forEach(function(services_group_ckbox){
     var service = services_group_ckbox.getAttribute('service');
@@ -46,9 +47,14 @@ services_group_checkboxes.forEach(function(services_group_ckbox){
     });
 });
 
-var pmr_all_cb = document.getElementById('pmr_sel_all');
-pmr_all_cb.addEventListener("click",function(){
-    pmr_checkboxes.forEach(ckbox => ckbox.checked = pmr_all_cb.checked);
+var apmr_all_cb = document.getElementById('apmr_sel_all');
+apmr_all_cb.addEventListener("click",function(){
+    apmr_checkboxes.forEach(ckbox => ckbox.checked = apmr_all_cb.checked);
+});
+
+var dpmr_all_cb = document.getElementById('dpmr_sel_all');
+dpmr_all_cb.addEventListener("click",function(){
+    dpmr_checkboxes.forEach(ckbox => ckbox.checked = dpmr_all_cb.checked);
 });
 
 // Error Message
@@ -116,7 +122,8 @@ send.addEventListener("click", function(){
                 digi_double: document.getElementsByClassName('double_digi_checkbox')[0].checked
             },
             services:[],
-            pmr: []
+            apmr: [],
+            dpmr: []
         }
     };
 
@@ -129,7 +136,8 @@ send.addEventListener("click", function(){
     });
 
     payload.channels.services = services;
-    payload.channels.pmr = Array.from(document.getElementsByClassName('pmr_checkbox')).filter(cb=>cb.checked).map(cb=>cb.value);
+    payload.channels.apmr = Array.from(document.getElementsByClassName('apmr_checkbox')).filter(cb=>cb.checked).map(cb=>cb.value);
+    payload.channels.dpmr = Array.from(document.getElementsByClassName('dpmr_checkbox')).filter(cb=>cb.checked).map(cb=>cb.value);
 
     console.log(payload);
     // save prio list for later

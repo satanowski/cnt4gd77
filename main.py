@@ -36,8 +36,8 @@ from channels import ChannelsFactory
 import utils
 
 now = datetime.utcnow()
-__VERSION__ = 0,9,3
-__LAST_UPDATE__ = "2018-01-13"
+__VERSION__ = 0,9,4
+__LAST_UPDATE__ = "2018-01-14"
 __LAST_DATA_UPDATE__ = "{d} {h:02d}:{m:02d}".format(
     d=now.date().isoformat(),
     h=now.time().hour,
@@ -71,6 +71,7 @@ def index():
         modes_supported=utils.CONFIG['supported_modes'],
         gov_services=utils.CONFIG['gov_services'],
         pmr=utils.CONFIG['pmr'],
+        pmr_digi=utils.CONFIG['pmr-digi'],
         version='.'.join(map(str, list(__VERSION__))),
         last_update=__LAST_UPDATE__,
         last_data=__LAST_DATA_UPDATE__
@@ -108,6 +109,10 @@ def get_csv_file(query):
             "Content-disposition": "attachment; filename=gd77-contacts.csv"
         }
     )
+
+@app.route('/static/<path:path>')
+def getStaticFile(path):
+    return send_from_directory('static', path, cache_timeout=0)
 
 
 if __name__ == "__main__":
