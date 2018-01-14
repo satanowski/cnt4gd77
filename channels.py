@@ -123,12 +123,12 @@ class ChannelsFactory:
 
                     channel = ChannelsFactory.ChannelRecord(
                         name=repeater.sign,
-                        rx_freq=freqs['rx'],
-                        tx_freq=freqs['tx'],
+                        rx_freq=freqs['tx'],
+                        tx_freq=freqs['rx'],
                         mode="Digital" if digital else "Analog",
                         power='High',
-                        rx_tone=rx_tone,
-                        tx_tone=tx_tone,
+                        rx_tone=tx_tone,
+                        tx_tone=rx_tone,
                         color=1 if digital else 0,
                         rx_group=1,
                         contact=1,

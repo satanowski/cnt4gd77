@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.9.4] - 2018-01-14
+### Zmienione
+- Poprawiony błąd z zamienionymi częstotliwościami przemienników
+
+
 ## [0.9.3] - 2018-01-13
 ### Dodane
 - Nowa opcja: przemienniki cyfrowe jako pierwsze
