@@ -1,0 +1,21 @@
+<table class="table is-hoverable">
+    <thead>
+        <tr>
+            <td colspan="4">
+                <label class="checkbox">
+                    <input type="checkbox" value="" class="service_checkbox_all" service="spec_kab">&nbsp;Wszystkie&nbsp;
+                </label>
+            </td>
+        </tr>
+    </thead>
+    <tbody>
+        {% for channel in kab_channels %}
+            <tr>
+                <td><input type="checkbox" value="{{channel.tx_freq}}" class="service_checkbox" service="spec_kab"></td>
+                <td>{{channel.name}}</td>
+                <td>{{'%3.04f' % channel.tx_freq}}</td>
+                <td>MHz</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>

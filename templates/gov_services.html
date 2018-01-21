@@ -1,0 +1,26 @@
+
+{% for service in gov_services %}
+<div class="column has-text-left">
+    <h5 class="title is-5">{{service['name']}}</h5>
+    <table class="table is-hoverable">
+        <thead>
+            <tr>
+                <td colspan="3">
+                    <label class="checkbox">
+                        <input type="checkbox" value="" class="service_checkbox_all" service="{{service['name']}}">&nbsp;Wszystkie&nbsp;
+                    </label>
+                </td>
+            </tr>
+        </thead>
+        <tbody>
+            {% for freq in service['freqs'] %}
+                <tr>
+                    <td><input type="checkbox" value="{{freq}}" class="service_checkbox" service="{{service['name']}}"></td>
+                    <td>{{'%3.04f' % freq}}</td>
+                    <td>MHz</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endfor %}

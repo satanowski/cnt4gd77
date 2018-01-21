@@ -1,0 +1,67 @@
+<article class="is-hidden" id="channels"> <!-- Kanały -->
+    <div class="columns">
+        <div class="column has-text-left">
+            <div class="notification is-warning">
+              Tu będzie jakieś info...
+            </div>
+        </div>
+
+        <div class="column has-text-left is-two-thirds">
+            <div class="tabs is-boxed channel_tabs" id="channels_tabs">
+              <ul>
+                <li class="chan_section_btn is-active" section="repeaters"><a>Przemienniki</a></li>
+                {% if kab_user %}
+                <li class="chan_section_btn" section="kab"><a>SP5KAB</a></li>
+                {% endif %}
+                <li class="chan_section_btn" section="services"><a>Służby</a></li>
+                <li class="chan_section_btn" section="pmr"><a>PMR</a></li>
+              </ul>
+            </div>
+            <div class="is-bordered channel_panel" style="">
+                <div class="" id="chan_tab_repeaters">{{repeaters|safe}}</div>
+                {% if kab_user %}
+                <div class="is-hidden" id="chan_tab_kab">{{kab_channels|safe}}</div>
+                {% endif %}
+                <div class="is-hidden" id="chan_tab_services">
+                    <div class="box is-orange" style="margin-right: 15px">
+                      <article class="media">
+                        <div class="media-left">
+                          <figure class="image is-64x64">
+                            <i class="fa fa-exclamation-triangle fa-4x" aria-hidden="true"></i>
+                          </figure>
+                        </div>
+                        <div class="media-content">
+                          <div class="content">
+                            <p>
+                              <b>Pamiętaj!</b> O ile nasłuch niezabezpieczonych częstotliwości używanych przez służby państwowe jest legalny, o tyle udostępnianie pozyskanych w ten sposób informacji jest już <b>surowo zabronione</b>! To samo dotyczy nadawania na tych częstotliwościach.
+                            </p>
+                          </div>
+                        </div>
+                      </article>
+                    </div>
+
+                    <div class="columns">{{gov_services|safe}}</div>
+                </div>
+                <div class="is-hidden" id="chan_tab_pmr">
+                    <div class="box is-orange" style="margin-right: 15px">
+                      <article class="media">
+                        <div class="media-left">
+                          <figure class="image is-64x64">
+                            <i class="fa fa-exclamation-triangle fa-4x" aria-hidden="true"></i>
+                          </figure>
+                        </div>
+                        <div class="media-content">
+                          <div class="content">
+                            <p>
+                              <b>Pamiętaj!</b> Nadawanie na częstotliwościach PMR radiem GD-77 <b>jest w Polsce zakazane</b>!
+                            </p>
+                          </div>
+                        </div>
+                      </article>
+                    </div>
+                    <div class="columns">{{pmr|safe}}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</article>

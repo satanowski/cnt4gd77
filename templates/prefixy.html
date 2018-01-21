@@ -1,0 +1,30 @@
+<article class="" id="prefarea">  <!-- Prefixy -->
+    <div class="columns">
+        <div class="column is-one-quarter has-text-left">
+            <div class="notification is-warning">
+              Musisz zaznaczyć przynajmniej jeden prefix i jeden okręg wywoławczy.<br/>
+              Jeśli nic nie zaznaczysz, lista kontaktów zostanie sporządzona na podstawie pozostałych ustawień.
+            </div>
+        </div>
+
+        <div class="column has-text-left">
+            <br>
+            <h5 class="title is-5">Prefixy</h5>
+            <input type="checkbox" id="prefix_all">&nbsp;<strong>*</strong>&nbsp;
+            {% for p in prefixy %}
+            <label class="checkbox">
+                    <input type="checkbox" class="prefix_selection" value="{{p}}">&nbsp;<strong>{{ p }}</strong>&nbsp;
+            </label>
+            {% endfor %}
+
+            <br>
+            <br>
+
+            <h5 class="title is-5">Okręgi wywoławcze</h5>
+            <input type="checkbox" id="area_all">&nbsp;<strong>*</strong>&nbsp;
+            {% for a in range(1, 10) %}
+                <input type="checkbox" value="{{a}}" class="area_selection">&nbsp;<strong>{{ a }}</strong>&nbsp;
+            {% endfor %}
+        </div>
+    </div>
+</article>

@@ -14,6 +14,29 @@ navi_buttons.forEach(function(button){
     });
 });
 
+
+var channels_sections = ['repeaters', 'services', 'pmr', 'kab'];
+
+
+var chann_sect_buttons = Array.from(document.getElementsByClassName("chan_section_btn"));
+chann_sect_buttons.forEach(function(button){
+    var guzik=button;
+    guzik.addEventListener("click", function(){
+        chann_sect_buttons.forEach(function(btn){
+            btn.classList.remove('is-active');
+        });
+        guzik.classList.toggle('is-active');
+        channels_sections.forEach(function(section){
+            var x= document.getElementById('chan_tab_' + section);
+            if (x) {
+                x.classList.add('is-hidden');
+            }
+        });
+        document.getElementById('chan_tab_' + guzik.getAttribute('section')).classList.toggle('is-hidden');
+    });
+});
+
+
 // Prefix & area section
 var prefix_checkboxes = Array.from(document.getElementsByClassName('prefix_selection'));
 var area_checkboxes = Array.from(document.getElementsByClassName('area_selection'));
