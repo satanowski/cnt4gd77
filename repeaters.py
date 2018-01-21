@@ -25,11 +25,9 @@ License: GNU AGPLv3
 
 
 import logging as log
-
 from collections import namedtuple
 
 from lxml import etree
-from requests import get
 
 
 log.basicConfig(level=log.DEBUG)
@@ -38,15 +36,14 @@ log.basicConfig(level=log.DEBUG)
 class PrzemiennikiWrapper:
     """Simple wrapper for https://przemienniki.net API."""
 
-    API_URL = 'https://przemienniki.net/export/rxf.xml?country=pl&onlyworking'
     REP = namedtuple('Repeater', 'sign,modes,working,bands,freqs,activation,'\
                                  'tones')
 
-    def __init__(self):
+    def __init__(self, raw_xml_data):
         self.repeaters = []
         self.bands = set()
         self.modes = set()
-        self.get_repeaters()
+        self.get_repeaters(raw_xml_data)
 
     @staticmethod
     def _ext_many(obj, field):
@@ -87,16 +84,13 @@ class PrzemiennikiWrapper:
             tones=tones
         )
 
-    def get_repeaters(self):
+    def get_repeaters(self, raw_xml_data: str):
         """Get and parse XML from API, extract Repeater's data."""
         parser = etree.XMLParser(recover=True)
         try:
-            root = etree.fromstring(
-                get(self.API_URL).content,
-                parser=parser
-            )
+            root = etree.fromstring(raw_xml_data.encode(), parser=parser)
         except:
-            log.error('Cannot retrieve or parse XML!')
+            log.error('Cannot parse XML!')
             return 0
 
         self.repeaters.clear()

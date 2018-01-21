@@ -35,32 +35,14 @@ log.basicConfig(level=log.DEBUG)
 class KAB:
     """Extract data from SP5KAB website."""
 
-    __URL__ = 'https://sp5kab.pl/czlonkowie/'
-
-
     @staticmethod
-    def _retrieve(url):
-        """Retrieve website of given url."""
-        headers = {
-            "user-agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537." \
-                          "36 (KHTML, like Gecko) Chrome/63.0.3239.84 Safar" \
-                          "i/537.36"
-        }
-
-        req = get(url, headers=headers)
-        if req.status_code != 200:
-            log.error('Cannot retrieve data from KAB site!')
-            return None
-
-        return req.content.decode()
-
-    @staticmethod
-    def retrieve_members():
+    def retrieve_members(raw_content):
         """Parse club site to get callsigns of club members."""
         members = []
-        parser = pq(KAB._retrieve(KAB.__URL__))
+        parser = pq(raw_content)
 
-        for member in map(lambda li: li.text.split(), parser('.entry-content li')):
+        for member in map(lambda li: li.text.split(),
+                          parser('.entry-content li')):
             if len(member) > 1:
                 members.append(member[-1])
 

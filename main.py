@@ -33,11 +33,12 @@ import msgpack
 
 from contacts import ContactsFactory
 from channels import ChannelsFactory
+from repeaters import PrzemiennikiWrapper
 import utils
 
 now = datetime.utcnow()
-__VERSION__ = 0,9,4
-__LAST_UPDATE__ = "2018-01-14"
+__VERSION__ = 0,9,5
+__LAST_UPDATE__ = "2018-01-20"
 __LAST_DATA_UPDATE__ = "{d} {h:02d}:{m:02d}".format(
     d=now.date().isoformat(),
     h=now.time().hour,
@@ -46,12 +47,12 @@ __LAST_DATA_UPDATE__ = "{d} {h:02d}:{m:02d}".format(
 
 
 utils.load_config()
-
 log.basicConfig(level=log.DEBUG)
 
 app = Flask(__name__)  # pylint: disable=C0103
-contacts = ContactsFactory()  # pylint: disable=C0103
-channels = ChannelsFactory()  # pylint: disable=C0103
+contacts = ContactsFactory(utils.EXT_DATA['dmr'])  # pylint: disable=C0103
+repeaters = PrzemiennikiWrapper(utils.EXT_DATA['rep']) # pylint: disable=C0103
+channels = ChannelsFactory(repeaters, utils.CONFIG['supported_bands'])  # pylint: disable=C0103
 
 flasklog = log.getLogger('werkzeug')
 flasklog.setLevel(log.ERROR)
@@ -65,8 +66,8 @@ def index():
         sp_talkgroups=utils.CONFIG['sp_talk_groups'],
         additionals=utils.CONFIG['additional_contacts'],
         additional_tgs=utils.CONFIG['additional_talkgroups'],
-        bands=utils.REPS.bands,
-        modes=utils.REPS.modes,
+        bands=repeaters.bands,
+        modes=repeaters.modes,
         bands_supported=utils.CONFIG['supported_bands'],
         modes_supported=utils.CONFIG['supported_modes'],
         gov_services=utils.CONFIG['gov_services'],

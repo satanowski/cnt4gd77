@@ -29,8 +29,6 @@ import logging as log
 import sys
 import re
 
-from requests import get
-
 import utils
 
 log.basicConfig(level=log.DEBUG)
@@ -39,24 +37,19 @@ log.basicConfig(level=log.DEBUG)
 class ContactsFactory:
     """Process raw CSV from ham-digital."""
 
-    URL = "http://dmr.ham-digital.net/user_by_call.php?id=260"
     ContactRecord = namedtuple(
         "ContactRecord",
         "num,callsign,dmrid,name,country,ctry"
     )
 
-    def __init__(self):
+    def __init__(self, csv_raw_content):
         self.records = {}
         self.ignored_contacts = []
-        self._get_records()
+        self._get_records(csv_raw_content)
 
-    def _get_records(self):
-        """Retrieve CSV file from DMR site and save them as dict of records."""
-        result = get(self.URL)
-        if result.status_code != 200:
-            self.records = {}
-
-        for line in result.text.split("\r\n")[1:]:
+    def _get_records(self, csv_raw_content):
+        """Extract data from CSV and save them as dict of records."""
+        for line in csv_raw_content.split("\r\n")[1:]:
             items = list(map(str.strip, filter(None, line.split(";"))))
             if len(items) < 6:
                 continue

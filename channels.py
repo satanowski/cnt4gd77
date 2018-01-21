@@ -26,7 +26,6 @@ License: GNU AGPLv3
 import logging as log
 from collections import namedtuple
 
-import utils
 
 log.basicConfig(level=log.DEBUG)
 
@@ -39,8 +38,10 @@ class ChannelsFactory:
         ",contact,slot"
     )
 
-    def __init__(self):
+    def __init__(self, repeaters, supported_bands):
         self.records = []
+        self.repeaters = repeaters
+        self.supported_bands = supported_bands
 
     def _filter_rxtx(self, freqs, rx=True):
         return filter(lambda r: (rx and 'rx' or 'tx') in r, freqs)
@@ -98,7 +99,7 @@ class ChannelsFactory:
         analog_reps = []
         sack = []
 
-        for repeater in utils.REPS.repeaters:
+        for repeater in self.repeaters:
             band_match = any([band.upper() in repeater.bands for band in bands])
             mode_match = any([mode.upper() in repeater.modes for mode in modes])
             area_match = any([repeater.sign.startswith("SR{}".format(area))
@@ -106,7 +107,7 @@ class ChannelsFactory:
 
             if all([band_match, mode_match, area_match]):
                 for band in bands:
-                    if band.lower() not in utils.CONFIG['supported_bands']:
+                    if band.lower() not in self.supported_bands:
                         continue
                     # one channel for each band
                     freqs = self.filter_rep_freqs(repeater.freqs, band)

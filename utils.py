@@ -28,14 +28,16 @@ import logging as log
 
 import yaml
 
+import fetcher
 from kab import KAB
-from przemienniki import PrzemiennikiWrapper
 
 
 log.basicConfig(level=log.DEBUG)
 
 CONFIG = {}
-REPS = PrzemiennikiWrapper()
+
+EXT_DATA = fetcher.fetch_urls()
+
 
 def load_config():
     """Load config file."""
@@ -57,10 +59,12 @@ def load_config():
         sys.exit(1)
 
     CONFIG = config
-    CONFIG['sp5kab'] = KAB.retrieve_members() or config.get('sp5kab', [])
     CONFIG['supported_modes'] = {
         a:b for a,b in config.get('supported_modes', [])
     }
+
+    CONFIG['sp5kab'] = KAB.retrieve_members(EXT_DATA['kab']) or \
+                       config.get('sp5kab', [])
 
 
 def are_channels_requested(query):
