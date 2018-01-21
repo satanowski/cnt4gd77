@@ -35,3 +35,52 @@
 label.disabled {
     color: #ccc;
 }
+
+.channel_tabs {
+    width: 90%;
+    margin-bottom:0 !important;
+}
+
+.channel_panel {
+    width: 90%;
+    margin-top:0;
+    border-top:0;
+    padding-top: 20px;
+    padding-left: 15px;
+}
+
+.markdown-body h2 {
+    font-size: 18px !important;
+    line-height: 140% !important;
+    padding-bottom: 0 !important;
+    margin: 0 0 !important;
+}
+
+.markdown-body h3 {
+    font-size: 15px !important;
+    line-height: 140% !important;
+    padding-bottom: 0 !important;
+    margin: 0 0  !important;
+}
+
+.markdown-body li {
+    font-size: 14px !important;
+    line-height: 140% !important;
+    padding-bottom: 0 !important;
+    margin: 0 0 !important;
+    list-style-type: disc !important;
+
+}
+
+.markdown-body {
+    font-family: 'Anaheim', sans-serif !important;
+    line-height: 140% !important;
+}
+
+.gist-file {
+    border:none !important;
+}
+
+.gist-meta {
+    display: none;
+}

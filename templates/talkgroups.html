@@ -1,0 +1,46 @@
+<article class="is-hidden" id="talkgroups"> <!-- Grupy rozmowne -->
+    <div class="columns">
+        <div class="column is-one-quarter has-text-left">
+            <div class="notification is-warning">
+                Zaznacz, które grupy rozmówne mają zostać dodane do twojej listy.<br/>
+                Te kontakty znajdą się na początku listy.
+            </div>
+        </div>
+
+        <div class="column has-text-left">
+            <table class="table is-hoverable">
+                <tbody>
+                {% for contact in additional_tgs %}
+                    <tr>
+                        <th><input type="checkbox" value="{{contact.id}}" class="tg_checkbox"></th>
+                        <td><code>{{contact.id}}</code></td>
+                        <td><strong>{{ contact.name|safe }}</strong></td>
+                        <td>{{ contact.description|safe }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+
+
+            {% if sp_talkgroups %}
+            <p class="subtitle">{{sp_talkgroups['name']}}</p>
+            <table class="table is-hoverable">
+                <thead>
+                    <tr>
+                        <th colspan="3">{{ sp_talkgroups['description']|safe}}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for tg in sp_talkgroups['items'] %}
+                    <tr>
+                        <th><input type="checkbox" value="{{tg['id']}}" class="tg_checkbox"></th>
+                        <td>{{tg['id']}}</td>
+                        <td>{{tg['name']}}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            {% endif %}
+        </div>
+    </div>
+</article>

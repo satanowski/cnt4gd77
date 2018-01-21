@@ -1,4 +1,17 @@
-# Changelog
+## [0.9.6] - 2018-01-21
+### Dodane
+- Kanały KAB
+- Wyświetlanie changeloga
+
+### Zmienione
+- Podział templatki strony na kawałki
+
+
+
+## [0.9.5] - 2018-01-20
+### Zmienione
+- Sposób ładowania danych przy starcie aplikacji
+
 
 ## [0.9.4] - 2018-01-14
 ### Dodane

@@ -1,0 +1,63 @@
+
+<table class="table is-hoverable">
+    <tr>
+        <td><i class="fa fa-tasks" aria-hidden="true">&nbsp;</i></td>
+        <td><strong>Pasma</strong></td>
+        <td>
+            {% for band in bands %}
+            <label class="checkbox{%if band not in bands_supported%} disabled{% endif %}">
+                {%if band in bands_supported%}
+                <input type="checkbox" value="{{band}}" class="band_checkbox" checked>&nbsp;{{band}}&nbsp;
+                {% else %}
+                <i class="fa fa-times-circle-o" aria-hidden="true"></i>&nbsp;{{band}}&nbsp;
+                {% endif %}
+            </label>
+            {% endfor %}
+        </td>
+    </tr>
+
+    <tr>
+        <td><i class="fa fa-cog" aria-hidden="true">&nbsp;</i></td>
+        <td><strong>Modulacje/tryby</strong></td>
+        <td>
+            {% for mode in modes %}
+                <label class="checkbox{% if mode not in modes_supported %} disabled{% endif%}">
+                {% if mode in modes_supported %}
+                <input type="checkbox" value="{{mode}}" class="mode_checkbox" checked>&nbsp;{{modes_supported[mode]}}&nbsp;
+                {% else %}
+                <i class="fa fa-times-circle-o" aria-hidden="true"></i>&nbsp;{{mode}}&nbsp;
+                {% endif%}
+                </label>
+            {% endfor %}
+        </td>
+    </tr>
+
+    <tr>
+        <td><i class="fa fa-map-o" aria-hidden="true">&nbsp;</i></td>
+        <td><strong>Obszary</strong></td>
+        <td>
+            {% for area in range(1,10) %}
+                <label class="checkbox">
+                    <input type="checkbox" value="{{area}}" class="rep_area_checkbox">&nbsp;{{area}}&nbsp;
+                </label>
+            {% endfor %}
+        </td>
+    </tr>
+
+    <tr>
+        <td><i class="fa fa-filter" aria-hidden="true">&nbsp;</i></td>
+        <td><strong>Opcje</strong></td>
+        <td>
+            <p>
+                <label class="checkbox">
+                    <input type="checkbox" class="digi_first_checkbox" checked>&nbsp;Przemienniki cyfrowe na początku listy&nbsp;
+                </label>
+            </p>
+            <p>
+                <label class="checkbox">
+                    <input type="checkbox" class="double_digi_checkbox" checked>&nbsp;Przemienniki DMR wstawiaj podwójnie: ze slotem <code>1</code> i <code>2</code>&nbsp;
+                </label>
+            </p>
+        </td>
+    </tr>
+</table>

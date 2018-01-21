@@ -36,10 +36,11 @@ log.basicConfig(level=log.DEBUG)
 
 CONFIG = {}
 
-EXT_DATA = fetcher.fetch_urls()
+def load_external_data():
+    return fetcher.fetch_urls()
 
 
-def load_config():
+def load_config(fresh_kab):
     """Load config file."""
     global CONFIG
 
@@ -63,7 +64,7 @@ def load_config():
         a:b for a,b in config.get('supported_modes', [])
     }
 
-    CONFIG['sp5kab'] = KAB.retrieve_members(EXT_DATA['kab']) or \
+    CONFIG['sp5kab'] = KAB.retrieve_members(fresh_kab) or \
                        config.get('sp5kab', [])
 
 
