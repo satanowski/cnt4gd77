@@ -58,10 +58,9 @@ class PrzemiennikiWrapper:
     @staticmethod
     def _merge_dicts(dicts):
         if len(dicts) == 2:
-            a, b = dicts
-            return {**a, **b}
-        else:
-            return dicts
+            a_dict, b_dict = dicts
+            return {**a_dict, **b_dict}
+        return dicts
 
     @staticmethod
     def _extract_repeater_data(obj):
@@ -89,7 +88,7 @@ class PrzemiennikiWrapper:
         parser = etree.XMLParser(recover=True)
         try:
             root = etree.fromstring(raw_xml_data.encode(), parser=parser)
-        except:
+        except:  # pylint: disable=bare-except
             log.error('Cannot parse XML!')
             return 0
 

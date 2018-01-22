@@ -26,7 +26,6 @@ License: GNU AGPLv3
 from collections import namedtuple, OrderedDict
 from itertools import product
 import logging as log
-import sys
 import re
 
 import utils
@@ -67,7 +66,8 @@ class ContactsFactory:
             self.records
         )
 
-    def _read_special_group(self, name):
+    @staticmethod
+    def _read_special_group(name):
         # special case for SP5KAB
         if name.lower() == 'sp5kab':
             group = utils.CONFIG['sp5kab']
@@ -153,9 +153,8 @@ class ContactsFactory:
             if not a_tg:
                 continue
 
-            a_tg = a_tg[0]
-            rec_set[a_tg['id']] = \
-                self._simple_dmr_rec(a_tg['id'], a_tg['name'])
+            rec_set[a_tg[0]['id']] = \
+                self._simple_dmr_rec(a_tg[0]['id'], a_tg[0]['name'])
 
     def add_contacts_by_area_and_prefix(self, rec_set: dict, prfxs: list,
                                         areas: list):
@@ -182,7 +181,7 @@ class ContactsFactory:
         records_set = OrderedDict()
         self.ignored_contacts = list(map(
             str.upper,
-            re.split('[,|.| |;]', query_json.get('igno',""))
+            re.split('[,|.| |;]', query_json.get('igno', ""))
         ))
 
         self.add_additional_contacts_numeric(records_set, query_json['adds'])

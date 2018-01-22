@@ -24,7 +24,6 @@ License: GNU AGPLv3
 """
 
 import logging as log
-from requests import get
 
 from pyquery import PyQuery as pq
 

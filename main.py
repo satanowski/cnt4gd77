@@ -27,10 +27,9 @@ import logging as log
 import io
 import os
 import zipfile
-from datetime import datetime
 
 from flask import Flask, Response, render_template, abort, session, redirect, \
-                  url_for
+                  url_for, send_from_directory
 import msgpack
 
 from contacts import ContactsFactory
@@ -39,73 +38,82 @@ from repeaters import PrzemiennikiWrapper
 import utils
 import secret
 
-now = datetime.utcnow()
-__VERSION__ = 0,9,6
-__LAST_UPDATE__ = "2018-01-21"
-__LAST_DATA_UPDATE__ = "{d} {h:02d}:{m:02d}".format(
-    d=now.date().isoformat(),
-    h=now.time().hour,
-    m=now.time().minute
-)
+
+__VERSION__ = 0, 9, 6
+__LAST_UPDATE__ = "2018-01-23"
+__LAST_DATA_UPDATE__ = utils.last_data_update_date()
 
 EXT_DATA = utils.load_external_data()
 utils.load_config(EXT_DATA['kab'])
 
+utils.disable_flask_log()
 log.basicConfig(level=log.DEBUG)
 
 app = Flask(__name__)  # pylint: disable=C0103
 app.secret_key = os.urandom(32)
 contacts = ContactsFactory(EXT_DATA['dmr'])  # pylint: disable=C0103
 repeaters = PrzemiennikiWrapper(EXT_DATA['rep']) # pylint: disable=C0103
-channels = ChannelsFactory(repeaters, utils.CONFIG['supported_bands'])  # pylint: disable=C0103
+channels = ChannelsFactory(  # pylint: disable=C0103
+    repeaters=repeaters.repeaters,
+    supported_bands=utils.CONFIG['supported_bands'],
+    kab_channels=secret.SPEC_KAB_CHANNELS
+)
 
 EXT_DATA = None  # No need to keep it
 del EXT_DATA
-
-flasklog = log.getLogger('werkzeug')
-flasklog.setLevel(log.ERROR)
 
 
 @app.route("/", methods=["GET"])
 def index():
     """Serve the main page."""
 
-    html_header=render_template('header.html',
+    html_header = render_template(
+        'header.html',
         kab_user=session.get('kab_user', False)
     )
 
-    prefixy=render_template('prefixy.html', prefixy=utils.CONFIG['sp_prefixy'])
+    prefixy = render_template(
+        'prefixy.html',
+        prefixy=utils.CONFIG['sp_prefixy']
+    )
 
-    talkgroups=render_template('talkgroups.html',
+    talkgroups = render_template(
+        'talkgroups.html',
         sp_talkgroups=utils.CONFIG['sp_talk_groups'],
         additional_tgs=utils.CONFIG['additional_talkgroups']
     )
 
-    spec_contacts=render_template('spec_contacts.html',
+    spec_contacts = render_template(
+        'spec_contacts.html',
         additionals=utils.CONFIG['additional_contacts']
     )
 
-    chan_repeaters=render_template('repeaters.html',
+    chan_repeaters = render_template(
+        'repeaters.html',
         bands=repeaters.bands,
         modes=repeaters.modes,
         bands_supported=utils.CONFIG['supported_bands'],
         modes_supported=utils.CONFIG['supported_modes']
     )
 
-    chan_services=render_template('gov_services.html',
+    chan_services = render_template(
+        'gov_services.html',
         gov_services=utils.CONFIG['gov_services']
     )
 
-    chan_pmr=render_template('pmr.html',
+    chan_pmr = render_template(
+        'pmr.html',
         pmr=utils.CONFIG['pmr'],
         pmr_digi=utils.CONFIG['pmr-digi']
     )
 
-    chan_kab=render_template('kab.html',
+    chan_kab = render_template(
+        'kab.html',
         kab_channels=secret.SPEC_KAB_CHANNELS
     )
 
-    channels=render_template('channels.html',
+    channels_panel = render_template(
+        'channels.html',
         repeaters=chan_repeaters,
         gov_services=chan_services,
         pmr=chan_pmr,
@@ -113,13 +121,15 @@ def index():
         kab_channels=chan_kab
     )
 
-    modal_info=render_template('modal_info.html',
+    modal_info = render_template(
+        'modal_info.html',
         version='.'.join(map(str, list(__VERSION__))),
         last_update=__LAST_UPDATE__,
         last_data=__LAST_DATA_UPDATE__
     )
 
-    return render_template('index.html',
+    return render_template(
+        'index.html',
         top_panel=render_template('top_panel.html'),
         generate=render_template('generate.html'),
         comments=render_template('comments.html'),
@@ -129,7 +139,7 @@ def index():
         prefixy=prefixy,
         talkgroups=talkgroups,
         spec_contacts=spec_contacts,
-        channels=channels,
+        channels=channels_panel,
         modal_info=modal_info,
         kab_mode=session.get('kab_user', False)
     )
@@ -147,9 +157,13 @@ def get_csv_file(query):
 
     contacts_csv = contacts.as_csv(query['contacts'])
     if utils.are_channels_requested(query):
+        if not session.get('kab_user', False):
+            if query['channels'].get('services', {}).get('spec_kab', []):
+                query['channels'].get('services', {}).pop('spec_kab')
+
         channels_csv = channels.as_csv(query['channels'])
         a_mem_file = io.BytesIO()
-        with zipfile.ZipFile(a_mem_file,'w') as zip_file:
+        with zipfile.ZipFile(a_mem_file, 'w') as zip_file:
             zip_file.writestr('contacts.csv', ''.join(contacts_csv))
             zip_file.writestr('channels.csv', ''.join(channels_csv))
 
@@ -168,12 +182,14 @@ def get_csv_file(query):
     )
 
 @app.route('/static/<path:path>')
-def getStaticFile(path):
+def get_static_file(path):
+    """Serve the static file with proper cache timeout."""
     return send_from_directory('static', path, cache_timeout=0)
 
 
 @app.route('/kab/<hash_sting>', methods=['GET'])
-def kab_login(hash_sting:str):
+def kab_login(hash_sting: str):
+    """Entrypoint for KAB memmbers login."""
     if hash_sting in secret.SECRET_LIST:
         session['kab_user'] = True
     return redirect(url_for('index'))
@@ -181,6 +197,7 @@ def kab_login(hash_sting:str):
 
 @app.route('/out', methods=['GET'])
 def kab_logout():
+    """Entrypoint for KAB members logout."""
     session.pop('kab_user', None)
     return redirect(url_for('index'))
 

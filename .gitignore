@@ -1,4 +1,6 @@
 *.swp
 __pycache__/*
 .venv/*
+.vscode/
+venv/
 secret.py

@@ -23,8 +23,10 @@ Copyright (C) 2017-2018 Satanowski <satanowski@gmail.com>
 License: GNU AGPLv3
 """
 
-from pathlib import Path
+import sys
 import logging as log
+from pathlib import Path
+from datetime import datetime
 
 import yaml
 
@@ -37,15 +39,16 @@ log.basicConfig(level=log.DEBUG)
 CONFIG = {}
 
 def load_external_data():
+    """Just a helper function to avoid import loop."""
     return fetcher.fetch_urls()
 
 
 def load_config(fresh_kab):
     """Load config file."""
-    global CONFIG
+    global CONFIG   # pylint: disable=global-statement
 
     path = Path.cwd() / "config.yaml"
-    if not path.exists():
+    if not path.exists():  # pylint: disable=no-member
         log.error('No config file! Exiting!')
         sys.exit(1)
     try:
@@ -61,7 +64,7 @@ def load_config(fresh_kab):
 
     CONFIG = config
     CONFIG['supported_modes'] = {
-        a:b for a,b in config.get('supported_modes', [])
+        a: b for a, b in config.get('supported_modes', [])
     }
 
     CONFIG['sp5kab'] = KAB.retrieve_members(fresh_kab) or \
@@ -70,8 +73,23 @@ def load_config(fresh_kab):
 
 def are_channels_requested(query):
     """Check if user requested any channel."""
-    any_repeater = any(query.get('channels',{}).get('repeaters', {}).values())
-    any_service = any(query.get('channels',{}).get('services', {}).values())
-    any_pmr = query.get('channels',{}).get('pmr', False)
+    any_repeater = any(query.get('channels', {}).get('repeaters', {}).values())
+    any_service = any(query.get('channels', {}).get('services', {}).values())
+    any_pmr = query.get('channels', {}).get('pmr', False)
 
     return any([any_repeater, any_service, any_pmr])
+
+
+def last_data_update_date():
+    """Convert current time into desired string."""
+    now = datetime.utcnow()
+    return "{d} {h:02d}:{m:02d}".format(
+        d=now.date().isoformat(),
+        h=now.time().hour,
+        m=now.time().minute
+    )
+
+def disable_flask_log():
+    """Disable flask log messages."""
+    flasklog = log.getLogger('werkzeug')
+    flasklog.setLevel(log.ERROR)

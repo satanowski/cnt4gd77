@@ -38,21 +38,24 @@ class ChannelsFactory:
         ",contact,slot"
     )
 
-    def __init__(self, repeaters, supported_bands):
+    def __init__(self, repeaters, supported_bands, kab_channels):
         self.records = []
         self.repeaters = repeaters
         self.supported_bands = supported_bands
+        self.kab_channels = kab_channels
 
-    def _filter_rxtx(self, freqs, rx=True):
-        return filter(lambda r: (rx and 'rx' or 'tx') in r, freqs)
+    @staticmethod
+    def _filter_rxtx(freqs, is_rx=True):
+        return filter(lambda r: (is_rx and 'rx' or 'tx') in r, freqs)
 
-    def _is_in_band(self, freq, boundaries):
-        if not isinstance(freq, float):
-            f = float(freq)
+    @staticmethod
+    def _is_in_band(frequency, boundaries):
+        if not isinstance(frequency, float):
+            freq = float(frequency)
         else:
-            f = freq
+            freq = frequency
 
-        return f >= boundaries[0] and f <= boundaries[1]
+        return freq >= boundaries[0] and freq <= boundaries[1]
 
     def _is_2m(self, freq):
         return self._is_in_band(freq, (144.0, 146.0))
@@ -60,7 +63,7 @@ class ChannelsFactory:
     def _is_70cm(self, freq):
         return self._is_in_band(freq, (430.0, 440.0))
 
-    def filter_rep_freqs(self, freqs:list, band:str):
+    def filter_rep_freqs(self, freqs: list, band: str):
         """Exctract correct frequencies from repeater record."""
         rxs = map(lambda r: r.get('rx', 0), self._filter_rxtx(freqs))
         txs = map(
@@ -69,105 +72,120 @@ class ChannelsFactory:
         )
 
         if band.lower() == '2m':
-            rx = list(filter(lambda f: self._is_2m(f), rxs))
-            tx = list(filter(lambda f: self._is_2m(f), txs))
+            frx = list(filter(self._is_2m, rxs))
+            ftx = list(filter(self._is_2m, txs))
         elif band.lower() == '70cm':
-            rx = list(filter(lambda f: self._is_70cm(f), rxs))
-            tx = list(filter(lambda f: self._is_70cm(f), txs))
+            frx = list(filter(self._is_70cm, rxs))
+            ftx = list(filter(self._is_70cm, txs))
         else:
             return {}
 
-        if not all([rx, tx]):
+        if not all([frx, ftx]):
             return {}
 
         return {
-            'rx': rx[0],
-            'tx': tx[0]
+            'rx': frx[0],
+            'tx': ftx[0]
         }
 
     @staticmethod
     def duplicate_channel(channel, updated):
+        """Return a copy of tuple with fields changed accordingly to 'updated'
+        dict."""
         orig = dict(channel._asdict())
         orig.update(updated)
         return ChannelsFactory.ChannelRecord(**orig)
 
 
-    def add_repeaters(self, bands: list, modes: list, areas: list,
-                      digi_first: bool, digi_double: bool):
+    def add_repeater(self, repeater, query, digi_reps, anal_reps, sack):
+        """Create repeater record and add it to relevant list."""
+        band_match = any([
+            band.upper() in repeater.bands for band in query['bands']
+        ])
+
+        mode_match = any([
+            mode.upper() in repeater.modes for mode in query['modes']
+        ])
+
+        area_match = any([
+            repeater.sign.startswith("SR{}".format(area)) for area
+            in query['areas']
+        ])
+
+        if not all([band_match, mode_match, area_match]):
+            return
+
+        for band in query['bands']: # one channel for each band
+            if band.lower() not in self.supported_bands:
+                continue
+
+            freqs = self.filter_rep_freqs(repeater.freqs, band)
+            if not freqs:  # skip if frew does not match the band
+                continue
+
+            if 'CTCSS' in repeater.activation:
+                tx_tone = repeater.tones.get('tx', 'None')
+                rx_tone = repeater.tones.get('rx', 'None')
+            else:
+                tx_tone = rx_tone = 'None'
+
+            digital = "MOTOTRBO" in repeater.modes
+
+            channel = ChannelsFactory.ChannelRecord(
+                name=repeater.sign,
+                rx_freq=freqs['tx'],
+                tx_freq=freqs['rx'],
+                mode="Digital" if digital else "Analog",
+                power='High',
+                rx_tone=tx_tone,
+                tx_tone=rx_tone,
+                color=1 if digital else 0,
+                rx_group=1,
+                contact=1,
+                slot=1
+            )
+
+            if digital and query['digi_double']: # additional channel for 2 slot
+                channel2 = ChannelsFactory.duplicate_channel(
+                    channel,
+                    {'name': channel.name + " [2]", 'slot': 2}
+                )
+
+                channel = ChannelsFactory.duplicate_channel(
+                    channel,
+                    {'name': repeater.sign + ' [1]'}
+                )
+
+            if query['digi_first']:
+                if digital:
+                    digi_reps.append(channel)
+                    if query['digi_double']:
+                        digi_reps.append(channel2)
+                else:
+                    anal_reps.append(channel)
+            else:
+                sack.append(channel)
+                if digital and query['digi_double']:
+                    sack.append(channel2)
+
+
+    def add_repeaters(self, query: dict):
         """Add Repeaters by given criterion."""
         digital_reps = []
         analog_reps = []
         sack = []
 
         for repeater in self.repeaters:
-            band_match = any([band.upper() in repeater.bands for band in bands])
-            mode_match = any([mode.upper() in repeater.modes for mode in modes])
-            area_match = any([repeater.sign.startswith("SR{}".format(area))
-                              for area in areas])
+            self.add_repeater(repeater, query, digital_reps, analog_reps, sack)
 
-            if all([band_match, mode_match, area_match]):
-                for band in bands:
-                    if band.lower() not in self.supported_bands:
-                        continue
-                    # one channel for each band
-                    freqs = self.filter_rep_freqs(repeater.freqs, band)
-                    if not freqs:
-                        continue
-
-                    if 'CTCSS' in repeater.activation:
-                        tx_tone = repeater.tones.get('tx', 'None')
-                        rx_tone = repeater.tones.get('rx', 'None')
-                    else:
-                        tx_tone = rx_tone = 'None'
-
-                    digital = "MOTOTRBO" in repeater.modes
-
-                    channel = ChannelsFactory.ChannelRecord(
-                        name=repeater.sign,
-                        rx_freq=freqs['tx'],
-                        tx_freq=freqs['rx'],
-                        mode="Digital" if digital else "Analog",
-                        power='High',
-                        rx_tone=tx_tone,
-                        tx_tone=rx_tone,
-                        color=1 if digital else 0,
-                        rx_group=1,
-                        contact=1,
-                        slot=1
-                    )
-
-                    if digital and digi_double: # additional channel for 2 slot
-                        channel2 = ChannelsFactory.duplicate_channel(
-                            channel,
-                            {
-                                'name': channel.name + " [2]",
-                                'slot': 2
-                            }
-                        )
-
-                        channel = ChannelsFactory.duplicate_channel(
-                            channel,
-                            {'name': repeater.sign + ' [1]'}
-                        )
-
-                    if digi_first:
-                        if digital:
-                            digital_reps.append(channel)
-                            if digi_double:
-                                digital_reps.append(channel2)
-                        else:
-                            analog_reps.append(channel)
-                    else:
-                        sack.append(channel)
-                        if digital and digi_double:
-                            sack.append(channel2)
-        if digi_first:
+        if query['digi_first']:
             self.records.extend(digital_reps)
             self.records.extend(analog_reps)
         else:
             self.records.extend(sack)
 
-    def add_regular_freqs(self, name:str, freqs: list):
+    def add_regular_freqs(self, name: str, freqs: list):
+        """Add analog channel."""
         for i, freq in enumerate(freqs):
             channel = ChannelsFactory.ChannelRecord(
                 name="{} {}".format(name, i+1),
@@ -184,6 +202,12 @@ class ChannelsFactory:
             )
             self.records.append(channel)
 
+    def add_kab_specials(self, channel_names):
+        """Add chosen KAB channels to the list"""
+        self.records.extend(list(
+            filter(lambda ch: ch.name in channel_names, self.kab_channels)
+        ))
+
 
     def as_csv(self, query_json: dict):
         """Convert to CSV file accepted by GD-77 software."""
@@ -195,27 +219,34 @@ class ChannelsFactory:
         buf = [head]
 
         self.records.clear()
+
+        #add KAB spec channels
+        kab_spec_ch2add = query_json.get('services', {}).get('spec_kab', [])
+        if kab_spec_ch2add:
+            self.add_kab_specials(kab_spec_ch2add)
+
         # add repeaters
         rep = query_json.get('repeaters', {})
-        self.add_repeaters(
-            bands=rep.get('bands', []),
-            modes=rep.get('modes', []),
-            areas=rep.get('areas', []),
-            digi_first=rep.get('digi_first', True),
-            digi_double=rep.get('digi_double'),
-        )
+        self.add_repeaters({
+            'bands': rep.get('bands', []),
+            'modes': rep.get('modes', []),
+            'areas': rep.get('areas', []),
+            'digi_first': rep.get('digi_first', True),
+            'digi_double': rep.get('digi_double')
+        })
 
         # add gov services
-        for service in query_json.get('services', []):
-            self.add_regular_freqs(
-                service,
-                query_json.get('services',{}).get(service, [])
-            )
+        services = query_json.get('services', {})
+        if 'spec_kab' in services:
+            services.pop('spec_kab')
+
+        for service in services:
+            self.add_regular_freqs(service, services.get(service, []))
 
         # add PMR
-        self.add_regular_freqs('PMR', query_json.get('apmr',[]))
+        self.add_regular_freqs('PMR', query_json.get('apmr', []))
         # add digital PMR
-        self.add_regular_freqs('PMR Digi', query_json.get('dpmr',[]))
+        self.add_regular_freqs('PMR Digi', query_json.get('dpmr', []))
 
         for i, rec in enumerate(self.records):
             buf.append(line.format(
