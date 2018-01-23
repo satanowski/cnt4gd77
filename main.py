@@ -50,7 +50,7 @@ utils.disable_flask_log()
 log.basicConfig(level=log.DEBUG)
 
 app = Flask(__name__)  # pylint: disable=C0103
-app.secret_key = os.urandom(32)
+app.secret_key = secret.app_secret
 contacts = ContactsFactory(EXT_DATA['dmr'])  # pylint: disable=C0103
 repeaters = PrzemiennikiWrapper(EXT_DATA['rep']) # pylint: disable=C0103
 channels = ChannelsFactory(  # pylint: disable=C0103
