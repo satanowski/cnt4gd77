@@ -1,0 +1,25 @@
+[
+    {
+        "name": "Grupy uniwersalne",
+        "desc": "",
+        "members": [1, 2, 9, 13, 91, 31669]
+    },
+
+    {
+        "name": "Grupy dla kontynentów",
+        "desc": "",
+        "members": [92, 93, 95]
+    },
+
+    {
+        "name": "Wejścia innych sieci",
+        "desc": "",
+        "members": [260080, 260081, 260040, 260041, 260042, 26022, 26095, 260021, 260022, 260024, 5000, 4280, 4280]
+    },
+
+    {
+        "name": "Grupy rozmówne dla innych krajów",
+        "desc": "",
+        "members": [240, 230, 231, 2302, 232, 262, 263, 302, 216, 255]
+    }
+]

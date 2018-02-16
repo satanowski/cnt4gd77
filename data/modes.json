@@ -1,0 +1,43 @@
+{
+    "ATV": {
+        "supported": 0
+    },
+
+    "C4FM": {
+        "supported": 0
+    },
+
+    "DSTAR": {
+        "supported": 0
+    },
+
+    "EchoLink": {
+        "supported": 1,
+        "indicator": "*",
+        "id": "ECHOLINK"
+    },
+
+    "FM": {
+        "supported": 1,
+        "indicator": "",
+        "id": "FM"
+    },
+
+    "FM Link": {
+        "supported": 1,
+        "indicator": "#",
+        "id": "FMLINK"
+    },
+
+    "DMR": {
+        "supported": 1,
+        "indicator": "",
+        "id": "MOTOTRBO"
+    },
+
+    "P25": {
+        "supported": 0,
+        "indicator": "",
+        "id": "APCO25"
+    }
+}

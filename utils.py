@@ -31,44 +31,12 @@ from datetime import datetime
 import yaml
 
 import fetcher
-from kab import KAB
-
 
 log.basicConfig(level=log.DEBUG)
-
-CONFIG = {}
 
 def load_external_data():
     """Just a helper function to avoid import loop."""
     return fetcher.fetch_urls()
-
-
-def load_config(fresh_kab):
-    """Load config file."""
-    global CONFIG   # pylint: disable=global-statement
-
-    path = Path.cwd() / "config.yaml"
-    if not path.exists():  # pylint: disable=no-member
-        log.error('No config file! Exiting!')
-        sys.exit(1)
-    try:
-        with open(path) as cfg_file:
-            config = yaml.load(cfg_file)
-            log.debug('Config loaded')
-    except IOError:
-        log.error('Cannot read config file! Exiting!')
-        sys.exit(1)
-    if not config:
-        log.error('Empty config! Exiting!')
-        sys.exit(1)
-
-    CONFIG = config
-    CONFIG['supported_modes'] = {
-        a: b for a, b in config.get('supported_modes', [])
-    }
-
-    CONFIG['sp5kab'] = KAB.retrieve_members(fresh_kab) or \
-                       config.get('sp5kab', [])
 
 
 def are_channels_requested(query):
@@ -80,7 +48,7 @@ def are_channels_requested(query):
     return any([any_repeater, any_service, any_pmr])
 
 
-def last_data_update_date():
+def current_date_as_string():
     """Convert current time into desired string."""
     now = datetime.utcnow()
     return "{d} {h:02d}:{m:02d}".format(
@@ -93,3 +61,46 @@ def disable_flask_log():
     """Disable flask log messages."""
     flasklog = log.getLogger('werkzeug')
     flasklog.setLevel(log.ERROR)
+
+
+def fix_country(country: str) -> str:
+    """Correct name of the country."""
+    remap = {
+        'Argentina Republic': 'Argentina',
+        'Moldava': 'Czech Republic',
+        'Swasiland': 'Swaziland',
+        'Viet Nam': 'Vietnam',
+        'AUS': 'Australia',
+        'BRA': 'Brazil',
+        'CAN': 'Canada',
+        'CHN': 'China',
+        'DNK': 'Denmark',
+        'IMN': 'Isle od Man',
+        'MEX': 'Mexico',
+        'NZL': 'New Zealand',
+        'THA': 'Thailand',
+        'TWN': 'Taiwan',
+        'United States': 'USA',
+        'Korsika': 'France',
+        'Netherlands Antilles': 'Netherlands',
+        'New Zeland': 'New Zealand'
+    }
+
+    part_remap = {
+        'Belarus': 'Belarus',
+        'Bosnia and': 'Bosnia and Hercegovina',
+        'Dominic': 'Dominican Republic',
+        'Domenican': 'Dominican Republic',
+        'Korea': 'Korea',
+        'Macao': 'China',
+        'Oesterreich': 'Austria'
+    }
+
+    if country in remap:
+        return remap[country]
+
+    for string in part_remap:
+        if country.startswith(string):
+            return part_remap[string]
+
+    return country

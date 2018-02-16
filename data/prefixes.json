@@ -1,0 +1,12 @@
+{
+    "PL": {
+        "list": ["HF", "SN", "SO", "SP", "SQ", "3Z"],
+        "min": 1,
+        "max": 9
+    },
+    "DE": {
+        "list": ["DA", "DB", "DC", "DD", "DF", "DG", "DH", "DJ", "DK", "DL", "DM", "DN", "DO", "DP", "DR"],
+        "min": 0,
+        "max": 9
+    }
+}

@@ -1,0 +1,25 @@
+[
+    {
+        "name": "Okręgowe grupy rozmowne",
+        "desc": "Grupy rozmowne dla poszczególnych okręgów: <code>2601, 2602, ..., 2609</code>",
+        "members": [260, 2600, 2601, 2602, 2603, 2604, 2605, 2606, 2607, 2608, 2609]
+    },
+
+    {
+        "name": "Grupy regionalne",
+        "desc": "",
+        "members": [26053, 26011, 26021, 26041, 26081]
+    },
+
+    {
+        "name": "Przemienniki",
+        "desc": "",
+        "members": [26012, 26032, 26044, 26075, 26077, 26082, 26083, 26084, 26086, 26087, 26089, 26091]
+    },
+
+    {
+        "name": "Sieci ratunkowe",
+        "desc": "",
+        "members": [260023, 260015, 26057, 26061, 26033, 26092]
+    }
+]

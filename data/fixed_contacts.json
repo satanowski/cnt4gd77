@@ -1,0 +1,761 @@
+[
+    {
+        "id": 260,
+        "call": "",
+        "name": "SP TG",
+        "istg": 1,
+        "cntr": "PL",
+        "desc": "",
+        "slot": 1
+    },
+
+    {
+        "id": 2600,
+        "call": "",
+        "name": "SP TG Polonia",
+        "istg": 1,
+        "cntr": "PL",
+        "desc": "",
+        "slot": 2
+    },
+
+    {
+        "id": 2601,
+        "call": "",
+        "name": "SP1 TG",
+        "istg": 1,
+        "cntr": "PL",
+        "desc": "",
+        "slot": 2
+    },
+
+    {
+        "id": 2602,
+        "call": "",
+        "name": "SP2 TG",
+        "istg": 1,
+        "cntr": "PL",
+        "desc": "",
+        "slot": 2
+    },
+
+    {
+        "id": 2603,
+        "call": "",
+        "name": "SP3 TG",
+        "istg": 1,
+        "cntr": "PL",
+        "desc": "",
+        "slot": 2
+    },
+
+    {
+        "id": 2604,
+        "call": "",
+        "name": "SP4 TG",
+        "istg": 1,
+        "cntr": "PL",
+        "desc": "",
+        "slot": 2
+    },
+
+    {
+        "id": 2605,
+        "call": "",
+        "name": "SP5 TG",
+        "istg": 1,
+        "cntr": "PL",
+        "desc": "",
+        "slot": 2
+    },
+
+    {
+        "id": 2606,
+        "call": "",
+        "name": "SP6 TG",
+        "istg": 1,
+        "cntr": "PL",
+        "desc": "",
+        "slot": 2
+    },
+
+    {
+        "id": 2607,
+        "call": "",
+        "name": "SP7 TG",
+        "istg": 1,
+        "cntr": "PL",
+        "desc": "",
+        "slot": 2
+    },
+
+    {
+        "id": 2608,
+        "call": "",
+        "name": "SP8 TG",
+        "istg": 1,
+        "cntr": "PL",
+        "desc": "",
+        "slot": 2
+    },
+
+    {
+        "id": 2609,
+        "call": "",
+        "name": "SP9 TG",
+        "istg": 1,
+        "cntr": "PL",
+        "desc": "",
+        "slot": 2
+    },
+
+    {
+        "id": 1,
+        "call": "",
+        "name": "DMR Global",
+        "istg": 1,
+        "cntr": "--",
+        "desc": "Globalna grupa rozmowna",
+        "slot": 1
+    },
+
+    {
+        "id": 2,
+        "call": "",
+        "name": "DMR Europe",
+        "istg": 1,
+        "cntr": "--",
+        "desc": "Europejska grupa rozmowna",
+        "slot": 1
+    },
+
+    {
+        "id": 9,
+        "call": "",
+        "name": "DMR Local",
+        "istg": 1,
+        "cntr": "--",
+        "desc": "Lokalna grupa rozmowna",
+        "slot": 2
+    },
+
+    {
+        "id": 13,
+        "call": "",
+        "name": "WW English",
+        "istg": 1,
+        "cntr": "--",
+        "desc": "World Wide English",
+        "slot": 1
+    },
+
+    {
+        "id": 260097,
+        "call": "",
+        "name": "Echo",
+        "istg": 0,
+        "cntr": "--",
+        "desc": "Papuga <code>260097</code>",
+        "slot": 2
+    },
+
+    {
+        "id": 91,
+        "call": "",
+        "name": "CQWW",
+        "istg": 1,
+        "cntr": "--",
+        "desc": "",
+        "slot": 1
+    },
+
+    {
+        "id": 92,
+        "call": "",
+        "name": "CQEU",
+        "istg": 1,
+        "cntr": "--",
+        "desc": "",
+        "slot": 1
+    },
+
+    {
+        "id": 93,
+        "call": "",
+        "name": "CQ Am.Pn.",
+        "istg": 1,
+        "cntr": "--",
+        "desc": "",
+        "slot": 1
+    },
+
+    {
+        "id": 95,
+        "call": "",
+        "name": "CQ Pacific",
+        "istg": 1,
+        "cntr": "--",
+        "desc": "",
+        "slot": 1
+    },
+
+    {
+        "id": 99,
+        "call": "",
+        "name": "Simplex",
+        "istg": 0,
+        "cntr": "--",
+        "desc": "",
+        "slot": 1
+    },
+
+    {
+        "id": 26053,
+        "call": "",
+        "name": "Maz",
+        "istg": 1,
+        "cntr": "PL",
+        "desc": "Regional talk in SP5 in Mazovia",
+        "slot": 2
+    },
+
+    {
+        "id": 260080,
+        "call": "",
+        "name": "R4280",
+        "istg": 1,
+        "cntr": "--",
+        "desc": "Access to REF 4280",
+        "slot": 2
+    },
+
+    {
+        "id": 260081,
+        "call": "",
+        "name": "R4281",
+        "istg": 1,
+        "cntr": "--",
+        "desc": "Access to REF 4281",
+        "slot": 2
+    },
+
+    {
+        "id": 260040,
+        "call": "",
+        "name": "XLX 132c",
+        "istg": 1,
+        "cntr": "--",
+        "desc": "",
+        "slot": 2
+    },
+
+    {
+        "id": 260041,
+        "call": "",
+        "name": "Dstar XRF009B",
+        "istg": 1,
+        "cntr": "--",
+        "desc": "",
+        "slot": 2
+    },
+
+    {
+        "id": 260042,
+        "call": "",
+        "name": "YSF Poland",
+        "istg": 1,
+        "cntr": "--",
+        "desc": "",
+        "slot": 2
+    },
+
+    {
+        "id": 26011,
+        "call": "",
+        "name": "SP1 Zach.Pomo",
+        "istg": 1,
+        "cntr": "PL",
+        "desc": "Regionalna grupa rozmówna dla woj. Zachodnio Pomorskiego",
+        "slot": 2
+    },
+
+    {
+        "id": 26021,
+        "call": "",
+        "name": "SP2 Pomorskie",
+        "istg": 1,
+        "cntr": "PL",
+        "desc": "Regionalna grupa rozmówna dla woj. Pomorskiego",
+        "slot": 2
+    },
+
+    {
+        "id": 26041,
+        "call": "",
+        "name": "SP4 Warmia Ma",
+        "istg": 1,
+        "cntr": "PL",
+        "desc": "Regionalna grupa rozmówna dla woj. Warmińsko Mazurskiego",
+        "slot": 2
+    },
+
+    {
+        "id": 26081,
+        "call": "",
+        "name": "SP8 Lublin OT",
+        "istg": 1,
+        "cntr": "PL",
+        "desc": "",
+        "slot": 2
+    },
+
+    {
+        "id": 26012,
+        "call": "SR1YWK",
+        "name": "Szczecin",
+        "istg": 1,
+        "cntr": "PL",
+        "desc": "",
+        "slot": 2
+    },
+
+    {
+        "id": 26022,
+        "call": "",
+        "name": "Trojmiasto YS",
+        "istg": 1,
+        "cntr": "PL",
+        "desc": "",
+        "slot": 2
+    },
+
+    {
+        "id": 26032,
+        "call": "SR3XX",
+        "name": "Poznań",
+        "istg": 1,
+        "cntr": "PL",
+        "desc": "",
+        "slot": 2
+    },
+
+    {
+        "id": 26044,
+        "call": "SR4H",
+        "name": "Hajnowka",
+        "istg": 1,
+        "cntr": "PL",
+        "desc": "",
+        "slot": 2
+    },
+
+    {
+        "id": 26075,
+        "call": "SR7MK",
+        "name": "S.Krzyz",
+        "istg": 1,
+        "cntr": "PL",
+        "desc": "",
+        "slot": 2
+    },
+
+    {
+        "id": 26077,
+        "call": "SR7FUS",
+        "name": "Kamien",
+        "istg": 1,
+        "cntr": "PL",
+        "desc": "",
+        "slot": 1
+    },
+
+    {
+        "id": 26082,
+        "call": "SR8FWD",
+        "name": "Wlodaw",
+        "istg": 1,
+        "cntr": "PL",
+        "desc": "",
+        "slot": 2
+    },
+
+    {
+        "id": 26083,
+        "call": "SR8LUF",
+        "name": "Lublin",
+        "istg": 1,
+        "cntr": "PL",
+        "desc": "",
+        "slot": 2
+    },
+
+    {
+        "id": 26084,
+        "call": "SR8K",
+        "name": "Dubiecko",
+        "istg": 1,
+        "cntr": "PL",
+        "desc": "",
+        "slot": 2
+    },
+
+    {
+        "id": 26086,
+        "call": "SR8DMR",
+        "name": "Chotyc",
+        "istg": 1,
+        "cntr": "PL",
+        "desc": "",
+        "slot": 2
+    },
+
+    {
+        "id": 26087,
+        "call": "SR8ET",
+        "name": "Sanok",
+        "istg": 1,
+        "cntr": "PL",
+        "desc": "",
+        "slot": 2
+    },
+
+    {
+        "id": 26089,
+        "call": "SR8UVC",
+        "name": "Chotyl",
+        "istg": 1,
+        "cntr": "PL",
+        "desc": "",
+        "slot": 2
+    },
+
+    {
+        "id": 26091,
+        "call": "SR9FSR",
+        "name": "Oswiec",
+        "istg": 1,
+        "cntr": "PL",
+        "desc": "",
+        "slot": 2
+    },
+
+    {
+        "id": 26095,
+        "call": "",
+        "name": "YSF PL Silesi",
+        "istg": 0,
+        "cntr": "PL",
+        "desc": "",
+        "slot": 2
+    },
+
+    {
+        "id": 260021,
+        "call": "",
+        "name": "YSF021 Free",
+        "istg": 0,
+        "cntr": "--",
+        "desc": "",
+        "slot": 2
+    },
+
+    {
+        "id": 260022,
+        "call": "",
+        "name": "YSF022 Free",
+        "istg": 0,
+        "cntr": "--",
+        "desc": "",
+        "slot": 2
+    },
+
+    {
+        "id": 260024,
+        "call": "",
+        "name": "YSF024 TECH",
+        "istg": 0,
+        "cntr": "--",
+        "desc": "",
+        "slot": 2
+    },
+
+    {
+        "id": 260023,
+        "call": "",
+        "name": "YSF EmCom",
+        "istg": 1,
+        "cntr": "--",
+        "desc": "",
+        "slot": 1
+    },
+
+    {
+        "id": 260015,
+        "call": "",
+        "name": "SP EmCom",
+        "istg": 1,
+        "cntr": "PL",
+        "desc": "",
+        "slot": 1
+    },
+
+    {
+        "id": 26057,
+        "call": "",
+        "name": "MASR SP5",
+        "istg": 1,
+        "cntr": "PL",
+        "desc": "",
+        "slot": 2
+    },
+
+    {
+        "id": 26061,
+        "call": "",
+        "name": "DASR SP6",
+        "istg": 1,
+        "cntr": "PL",
+        "desc": "",
+        "slot": 1
+    },
+
+    {
+        "id": 26033,
+        "call": "",
+        "name": "WASR SP3",
+        "istg": 1,
+        "cntr": "PL",
+        "desc": "",
+        "slot": 2
+    },
+
+    {
+        "id": 26091,
+        "call": "",
+        "name": "BASR SP9-1",
+        "istg": 0,
+        "cntr": "PL",
+        "desc": "",
+        "slot": 2
+    },
+
+    {
+        "id": 26092,
+        "call": "",
+        "name": "TASR SP9-2",
+        "istg": 1,
+        "cntr": "--",
+        "desc": "",
+        "slot": 2
+    },
+
+    {
+        "id": 26093,
+        "call": "",
+        "name": "KPGK&KASLK",
+        "istg": 0,
+        "cntr": "PL",
+        "desc": "",
+        "slot": 2
+    },
+
+    {
+        "id": 26094,
+        "call": "",
+        "name": "KRK Grupa",
+        "istg": 1,
+        "cntr": "PL",
+        "desc": "",
+        "slot": 2
+    },
+
+    {
+        "id": 260090,
+        "call": "",
+        "name": "Message servi",
+        "istg": 0,
+        "cntr": "--",
+        "desc": "",
+        "slot": 1
+    },
+
+    {
+        "id": 262993,
+        "call": "",
+        "name": "Message WX",
+        "istg": 0,
+        "cntr": "--",
+        "desc": "",
+        "slot": 1
+    },
+
+    {
+        "id": 31669,
+        "call": "",
+        "name": "GlobalDXNet",
+        "istg": 1,
+        "cntr": "--",
+        "desc": "",
+        "slot": 1
+    },
+
+    {
+        "id": 907,
+        "call": "",
+        "name": "JOTA 907TG",
+        "istg": 1,
+        "cntr": "--",
+        "desc": "",
+        "slot": 1
+    },
+
+    {
+        "id": 240,
+        "call": "",
+        "name": "Sweden",
+        "istg": 1,
+        "cntr": "SE",
+        "desc": "",
+        "slot": 2
+    },
+
+    {
+        "id": 230,
+        "call": "",
+        "name": "Czechy",
+        "istg": 1,
+        "cntr": "CZ",
+        "desc": "",
+        "slot": 2
+    },
+
+    {
+        "id": 231,
+        "call": "",
+        "name": "Slowacja",
+        "istg": 1,
+        "cntr": "SK",
+        "desc": "",
+        "slot": 2
+    },
+
+    {
+        "id": 2302,
+        "call": "",
+        "name": "Czechy&Slowac",
+        "istg": 1,
+        "cntr": "CZ",
+        "desc": "",
+        "slot": 2
+    },
+
+    {
+        "id": 232,
+        "call": "",
+        "name": "Austria",
+        "istg": 1,
+        "cntr": "AT",
+        "desc": "",
+        "slot": 2
+    },
+
+    {
+        "id": 262,
+        "call": "",
+        "name": "Niemcy 262TG",
+        "istg": 1,
+        "cntr": "DE",
+        "desc": "",
+        "slot": 2
+    },
+
+    {
+        "id": 263,
+        "call": "",
+        "name": "Niemcy 263TG",
+        "istg": 1,
+        "cntr": "DE",
+        "desc": "",
+        "slot": 2
+    },
+
+    {
+        "id": 302,
+        "call": "",
+        "name": "Kanada 302TG",
+        "istg": 1,
+        "cntr": "CA",
+        "desc": "",
+        "slot": 2
+    },
+
+    {
+        "id": 216,
+        "call": "",
+        "name": "Wegry",
+        "istg": 1,
+        "cntr": "HU",
+        "desc": "",
+        "slot": 2
+    },
+
+    {
+        "id": 255,
+        "call": "",
+        "name": "Ukraina",
+        "istg": 1,
+        "cntr": "UA",
+        "desc": "",
+        "slot": 2
+    },
+
+    {
+        "id": 920,
+        "call": "",
+        "name": "DACH",
+        "istg": 0,
+        "cntr": "--",
+        "desc": "",
+        "slot": 2
+    },
+
+    {
+        "id": 4000,
+        "call": "",
+        "name": "UNLINK",
+        "istg": 0,
+        "cntr": "--",
+        "desc": "",
+        "slot": 1
+    },
+
+    {
+        "id": 5000,
+        "call": "",
+        "name": "STATUS Reflek",
+        "istg": 1,
+        "cntr": "--",
+        "desc": "",
+        "slot": 1
+    },
+
+    {
+        "id": 4280,
+        "call": "",
+        "name": "R4280",
+        "istg": 0,
+        "cntr": "--",
+        "desc": "",
+        "slot": 2
+    },
+
+    {
+        "id": 4281,
+        "call": "",
+        "name": "R4281",
+        "istg": 0,
+        "cntr": "--",
+        "desc": "",
+        "slot": 2
+    }
+]
