@@ -1,7 +1,6 @@
 flask
 requests
 gunicorn
-PyYAML
 msgpack-python
 lxml
 pyquery

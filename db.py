@@ -6,20 +6,11 @@ from uuid import uuid1
 from hashlib import md5
 
 from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
 from models import (
-    Country,
-    Channel,
-    Prefix,
-    Band,
-    Mode,
-    Token,
-    TgGroup,
-    Dmr,
-    FaT,
-    ChannelGroup
+    Band, Base, Channel, ChannelGroup, Country, Dmr, FaT, Mode, Prefix,
+    Repeater, Store, TgGroup, Token
 )
 
 
@@ -28,9 +19,11 @@ class DB():
 
     def __init__(self, credentials, echo=False):
         self.engine = create_engine(credentials, echo=echo)
-        self.base = declarative_base()
-        self.base.metadata.create_all(self.engine)
-        self.session = sessionmaker(bind=self.engine)()
+        self.base = Base
+        self.base.metadata.create_all(self.engine, checkfirst=True)
+        session = sessionmaker(bind=self.engine)
+        self.session = session()
+
         if not self._exists(TgGroup, 'id', 0):
             self.session.add(TgGroup(id=0, name="<no group>"))
             self.session.commit()
@@ -38,16 +31,28 @@ class DB():
             self.session.add(ChannelGroup(id=0, name="<no group>"))
             self.session.commit()
 
+    def store(self, key, val):
+        """Store or update key:val record."""
+        rec = self.one_or_none(Store, 'name', key)
+        if not rec:
+            rec = Store(name=key, value=val)
+            self.session.add(rec)
+        else:
+            rec.value = val
+        self.session.commit()
+
     def one_or_none(self, model, field_name: str, value):
         """Return record of given model or None if it does not exists."""
-        query = self.session.query(model).\
-            filter(getattr(model, field_name) == value)
-        return query.one_or_none()
+        return self.session.query(model).filter(
+            getattr(model, field_name) == value
+        ).one_or_none()
 
     def _exists(self, model, field_name: str, value: str) -> bool:
-        field = getattr(model, field_name)
-        query = self.session.query(model).filter(field == value)
-        return query.one_or_none() != None
+        return self.one_or_none(
+            model,
+            getattr(model, field_name),
+            value
+        ).one_or_none() != None
 
     def add_countries(self, countries_list: list):
         """Populate Country table."""
@@ -61,8 +66,7 @@ class DB():
 
     def add_prefixes(self, c_short: str, prfxs: list, amin: int, amax: int):
         """Add Prefix records for given country."""
-        country = self.session.query(Country).\
-                  filter(Country.short == c_short).one_or_none()
+        country = self.one_or_none(Country, 'short', c_short)
 
         if not country:
             log.error('No such country: %s!', c_short)
@@ -105,15 +109,14 @@ class DB():
 
     def _country_id_by_short(self, country_short: str) -> int:
         """Determine Country by its short name."""
-        qry = self.session.query(Country).filter(Country.short == country_short)
-        country = qry.one_or_none()
+        country = self.one_or_none(Country, 'short', country_short)
         return country.id if country else 0
 
     def add_dmr(self, dmr_id: int, call: str, name: str, is_talk_group: bool,
                 country_short: str, description: str, tg_group=0):
         """Add DMR record."""
 
-        dmr = self.one_or_none(Dmr, 'id', dmr_id)
+        dmr = self.one_or_none(Dmr, 'dmr_id', dmr_id)
 
         if dmr:
             dmr.name = name
@@ -125,7 +128,7 @@ class DB():
 
         else:
             dmr = Dmr(
-                id=dmr_id,
+                dmr_id=dmr_id,
                 name=name,
                 call=call,
                 is_tg=is_talk_group,
@@ -146,7 +149,7 @@ class DB():
             self.session.commit()
 
         for dmr_id in members:
-            dmr = self.one_or_none(Dmr, 'id', dmr_id)
+            dmr = self.one_or_none(Dmr, 'dmr_id', dmr_id)
             if not dmr:
                 continue
             dmr.tg_group_id = tgg.id
@@ -176,8 +179,10 @@ class DB():
 
     def gues_band(self, freq: float):
         """Detect the band on the base of given frequency."""
-        return self.session.query(Band).\
-                filter(Band.low <= freq, Band.high >= freq).one_or_none()
+        return self.session.query(Band).filter(
+            Band.low <= freq,
+            Band.high >= freq
+        ).one_or_none()
 
     def add_fat(self, f_tx: float, f_rx: float, t_tx: float, t_rx: float):
         """Add Frequency and Tone record."""
@@ -186,9 +191,9 @@ class DB():
             return None
 
         fat = self.session.query(FaT).filter(
-            FaT.f_tx == f_tx and \
-            FaT.f_rx == f_rx and \
-            FaT.t_tx == t_tx and \
+            FaT.f_tx == f_tx and
+            FaT.f_rx == f_rx and
+            FaT.t_tx == t_tx and
             FaT.t_rx == t_rx).one_or_none()
 
         if not fat:
@@ -202,7 +207,7 @@ class DB():
             self.session.add(fat)
             self.session.commit()
 
-        return fat.id
+        return fat
 
     def add_channel_group(self, name: str, description: str, is_digit: bool,
                           members: list, slot=1):
@@ -223,7 +228,7 @@ class DB():
                 comment='',
                 is_digit=is_digit,
                 slot=slot,
-                fat_id=self.add_fat(freq, freq, 0, 0),
+                fat_id=self.add_fat(freq, freq, 0, 0).id,
                 group_id=chg.id
             )
 
@@ -240,5 +245,33 @@ class DB():
                 active=active
             )
             self.session.add(tkn)
+
+        self.session.commit()
+
+    def get_countries_dict(self):
+        """Return list of defined countries as dict."""
+        return {
+            name: short for name, short in
+            self.session.query(Country.name, Country.short).all()
+        }
+
+    def get_mode_by_ident(self, ident):
+        """Get Mode record by its identificator."""
+        qry = self.session.query(Mode).filter(Mode.ident == ident)
+        return qry.one_or_none()
+
+    def add_repeater(self, call: str, active: bool, country_short: str,
+                     modes: list, fats: list):
+        """Add of update Repeater."""
+        rep = self.one_or_none(Repeater, 'call', call)
+        if not rep:
+            rep = Repeater(
+                call=call,
+                country_id=self._country_id_by_short(country_short),
+                active=active
+            )
+            self.session.add(rep)
+        rep.modes.extend(modes)
+        rep.fats.extend(fats)
 
         self.session.commit()

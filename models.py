@@ -1,6 +1,7 @@
 """
 models.py
 """
+# pylint: disable=too-few-public-methods,missing-docstring
 
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Table, Column, Integer, String, Boolean, Float, \
@@ -8,7 +9,7 @@ from sqlalchemy import Table, Column, Integer, String, Boolean, Float, \
 from sqlalchemy.orm import relationship
 
 
-Base = declarative_base()
+Base = declarative_base()  # pylint: disable=invalid-name
 
 
 class Country(Base):
@@ -73,14 +74,14 @@ class Token(Base):
     active = Column(Boolean, nullable=False, default=False)
 
 
-rep_has_modes = Table(
+rep_has_modes = Table(  # pylint: disable=invalid-name
     'rep_has_modes',
     Base.metadata,
     Column('rep_id', Integer, ForeignKey('repeater.id')),
     Column('mod_id', Integer, ForeignKey('mode.id'))
 )
 
-rep_has_fats = Table(
+rep_has_fats = Table(  # pylint: disable=invalid-name
     'rep_has_fats',
     Base.metadata,
     Column('rep_id', Integer, ForeignKey('repeater.id')),
@@ -94,8 +95,8 @@ class Repeater(Base):
     id = Column(Integer, primary_key=True)
     call = Column(String(8), unique=True, nullable=False)
     country_id = Column(Integer, ForeignKey('country.id'), nullable=False)
+    active = Column(Boolean, nullable=False, default=False)
     country = relationship('Country')
-
     modes = relationship("Mode", secondary=rep_has_modes)
     fats = relationship("FaT", secondary=rep_has_fats)
 
@@ -146,7 +147,7 @@ class Channel(Base):
 class Dmr(Base):
     __tablename__ = 'dmr'
 
-    id = Column(Integer, primary_key=True)
+    dmr_id = Column(Integer, primary_key=True, autoincrement=False)
     name = Column(String(26), unique=False, nullable=True)
     call = Column(String(8), unique=False, nullable=False)
     is_tg = Column(Boolean, nullable=False, default=False)

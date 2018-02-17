@@ -29,7 +29,7 @@ from pathlib import Path
 
 
 import secret
-# from utils import current_date_as_string
+from utils import current_date_as_string
 from db import DB
 
 
@@ -50,7 +50,7 @@ class DbInitialize():
         for loader in LOAD_LIST:  # order does matter
             getattr(self, loader)()
 
-        # self.db.store('db_created', current_date_as_string())
+        self.db.store('db_created', current_date_as_string())
 
     @staticmethod
     def _load(data_file, callback):
@@ -156,17 +156,18 @@ class DbInitialize():
     def load_sp5kab_secret(self):
         """Import private channels for sp5kab members."""
         for channel in secret.SPEC_KAB_CHANNELS:
+            fat = self.db.add_fat(
+                channel.get('ftx'),
+                channel.get('frx'),
+                channel.get('ttx'),
+                channel.get('trx')
+            )
             self.db.add_channel(
                 name=channel.get('name'),
                 comment='',
                 is_digit=channel.get('is_digit'),
                 slot=channel.get('slot', 1),
-                fat_id=self.db.add_fat(
-                    channel.get('ftx'),
-                    channel.get('frx'),
-                    channel.get('ttx'),
-                    channel.get('trx')
-                ),
+                fat_id=fat.id,
                 group_id=0
             )
 

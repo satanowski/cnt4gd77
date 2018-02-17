@@ -32,8 +32,8 @@ log.basicConfig(level=log.DEBUG)
 
 
 EXT_SOURCES = {
-    'rep': 'https://przemienniki.net/export/rxf.xml?country=pl&onlyworking',
-    'dmr': 'http://dmr.ham-digital.net/user_by_call.php?id=260',
+    'rep': 'https://przemienniki.net/export/rxf.xml',
+    'dmr': 'http://dmr.ham-digital.net/user_by_call.php',
     'kab': 'https://sp5kab.pl/czlonkowie/',
 }
 
@@ -73,3 +73,4 @@ def fetch_urls() -> list:
             thread.join()
 
     return results
+x

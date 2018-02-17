@@ -23,12 +23,8 @@ Copyright (C) 2017-2018 Satanowski <satanowski@gmail.com>
 License: GNU AGPLv3
 """
 
-import sys
 import logging as log
-from pathlib import Path
 from datetime import datetime
-
-import yaml
 
 import fetcher
 
