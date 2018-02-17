@@ -29,7 +29,7 @@ from pathlib import Path
 
 
 import secret
-from utils import current_date_as_string
+# from utils import current_date_as_string
 from db import DB
 
 
@@ -37,6 +37,7 @@ log.basicConfig(level=log.DEBUG)
 LOAD_LIST = []
 
 def register4load(func):
+    """Simple func decorator."""
     LOAD_LIST.append(func.__name__)
     return func
 
@@ -63,7 +64,7 @@ class DbInitialize():
     @register4load
     def load_countries(self):
         """Import list of countries."""
-        self._load('countries', lambda data: self.db.add_countries(data))
+        self._load('countries', self.db.add_countries)
 
     @register4load
     def load_prefixes(self):
@@ -83,8 +84,13 @@ class DbInitialize():
     def load_bands(self):
         """Import bands data."""
         def func(data):  # pylint: disable=C0111
-            for name, (sup, low, hi) in data.items():
-                self.db.add_band(name=name, supported=sup==1, low=low, high=hi)
+            for name, (sup, low, high) in data.items():
+                self.db.add_band(
+                    name=name,
+                    supported=(sup == 1),
+                    low=low,
+                    high=high
+                )
 
         self._load('bands', func)
 
@@ -97,7 +103,7 @@ class DbInitialize():
                     name=name,
                     ident=specs.get('id', name).lower(),
                     indict=specs.get('indicator', None),
-                    supported=specs.get('supported', 0)==1
+                    supported=specs.get('supported', 0) == 1
                 )
 
         self._load('modes', func)
@@ -108,10 +114,10 @@ class DbInitialize():
         def func(data):  # pylint: disable=C0111
             for contact in data:
                 self.db.add_dmr(
-                    id=int(contact.get('id')),
+                    dmr_id=int(contact.get('id')),
                     call=contact.get('call'),
                     name=contact.get('name'),
-                    is_talk_group=contact.get('istg', 1)==1,
+                    is_talk_group=contact.get('istg', 1) == 1,
                     country_short=contact.get('cntr'),
                     description=contact.get('desc')
                 )
@@ -148,7 +154,7 @@ class DbInitialize():
 
     @register4load
     def load_sp5kab_secret(self):
-        """Import private channels for sp5kab members"""   
+        """Import private channels for sp5kab members."""
         for channel in secret.SPEC_KAB_CHANNELS:
             self.db.add_channel(
                 name=channel.get('name'),
@@ -166,7 +172,7 @@ class DbInitialize():
 
     @register4load
     def load_tokens(self):
-        """Import private channels for sp5kab members"""   
+        """Import private channels for sp5kab members."""
         for owner in secret.DEFAULT_TOKENS_OWNERS:
             self.db.add_token(owner, True)
 
