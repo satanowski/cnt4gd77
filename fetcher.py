@@ -73,4 +73,3 @@ def fetch_urls() -> list:
             thread.join()
 
     return results
-x

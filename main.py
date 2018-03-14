@@ -32,35 +32,22 @@ from flask import Flask, Response, render_template, abort, session, redirect, \
                   url_for, send_from_directory
 import msgpack
 
-from contacts import ContactsFactory
-from channels import ChannelsFactory
-from repeaters import PrzemiennikiWrapper
 import utils
 import secret
+from db import DB
 
+db = DB(secret.DB_CREDENTIALS)
 
 __VERSION__ = 0, 9, 6
-__LAST_UPDATE__ = "2018-01-23"
-__LAST_DATA_UPDATE__ = utils.last_data_update_date()
+__LAST_UPDATE__ = ''
+__LAST_DATA_UPDATE__ = db.get_last_db_update() or '(brak danych)'
 
-EXT_DATA = utils.load_external_data()
-utils.load_config(EXT_DATA['kab'])
 
 utils.disable_flask_log()
 log.basicConfig(level=log.DEBUG)
 
 app = Flask(__name__)  # pylint: disable=C0103
 app.secret_key = secret.app_secret
-contacts = ContactsFactory(EXT_DATA['dmr'])  # pylint: disable=C0103
-repeaters = PrzemiennikiWrapper(EXT_DATA['rep']) # pylint: disable=C0103
-channels = ChannelsFactory(  # pylint: disable=C0103
-    repeaters=repeaters.repeaters,
-    supported_bands=utils.CONFIG['supported_bands'],
-    kab_channels=secret.SPEC_KAB_CHANNELS
-)
-
-EXT_DATA = None  # No need to keep it
-del EXT_DATA
 
 
 @app.route("/", methods=["GET"])
@@ -74,37 +61,21 @@ def index():
 
     prefixy = render_template(
         'prefixy.html',
-        prefixy=utils.CONFIG['sp_prefixy']
+        data=db.get_countries_with_prefixes()
     )
 
-    talkgroups = render_template(
-        'talkgroups.html',
-        sp_talkgroups=utils.CONFIG['sp_talk_groups'],
-        additional_tgs=utils.CONFIG['additional_talkgroups']
-    )
-
-    spec_contacts = render_template(
-        'spec_contacts.html',
-        additionals=utils.CONFIG['additional_contacts']
-    )
+    talkgroups = render_template('talkgroups.html', data=db.get_tg_groups())
+    spec_contacts = render_template('spec_contacts.html')
 
     chan_repeaters = render_template(
         'repeaters.html',
-        bands=repeaters.bands,
-        modes=repeaters.modes,
-        bands_supported=utils.CONFIG['supported_bands'],
-        modes_supported=utils.CONFIG['supported_modes']
+        bands=db.get_bands(),
+        modes=db.get_modes()
     )
 
-    chan_services = render_template(
-        'gov_services.html',
-        gov_services=utils.CONFIG['gov_services']
-    )
-
-    chan_pmr = render_template(
-        'pmr.html',
-        pmr=utils.CONFIG['pmr'],
-        pmr_digi=utils.CONFIG['pmr-digi']
+    chan_groups = render_template(
+        'chan_groups.html',
+        groups=db.get_channel_groups()
     )
 
     chan_kab = render_template(
@@ -115,8 +86,7 @@ def index():
     channels_panel = render_template(
         'channels.html',
         repeaters=chan_repeaters,
-        gov_services=chan_services,
-        pmr=chan_pmr,
+        chan_groups=chan_groups,
         kab_user=session.get('kab_user', False),
         kab_channels=chan_kab
     )

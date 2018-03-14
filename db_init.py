@@ -135,7 +135,7 @@ class DbInitialize():
                     members=tg_group.get('members')
                 )
 
-        self._load('sp_tgs', func)
+        self._load('tgs', func)
 
     @register4load
     def load_channels(self):

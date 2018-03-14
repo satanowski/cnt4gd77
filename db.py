@@ -40,6 +40,10 @@ class DB():
         else:
             rec.value = val
         self.session.commit()
+    
+    def provide(self, key):
+        """Get a value from the store."""
+        return self.one_or_none(Store, 'name', key)
 
     def one_or_none(self, model, field_name: str, value):
         """Return record of given model or None if it does not exists."""
@@ -48,11 +52,7 @@ class DB():
         ).one_or_none()
 
     def _exists(self, model, field_name: str, value: str) -> bool:
-        return self.one_or_none(
-            model,
-            getattr(model, field_name),
-            value
-        ).one_or_none() != None
+        return self.one_or_none(model, field_name, value) != None
 
     def add_countries(self, countries_list: list):
         """Populate Country table."""
@@ -177,7 +177,7 @@ class DB():
 
         self.session.commit()
 
-    def gues_band(self, freq: float):
+    def guess_band(self, freq: float):
         """Detect the band on the base of given frequency."""
         return self.session.query(Band).filter(
             Band.low <= freq,
@@ -186,7 +186,7 @@ class DB():
 
     def add_fat(self, f_tx: float, f_rx: float, t_tx: float, t_rx: float):
         """Add Frequency and Tone record."""
-        band = self.gues_band(f_tx)
+        band = self.guess_band(f_tx)
         if not band:
             return None
 
@@ -275,3 +275,48 @@ class DB():
         rep.fats.extend(fats)
 
         self.session.commit()
+
+    def get_last_db_update(self):
+        rec = self.one_or_none(Store, 'name', 'db_updated')
+        return rec.value if rec else None
+
+    def get_countries_with_prefixes(self):
+        countries = {prfx.country for prfx in self.session.query(Prefix).all()}
+        return {
+            country.name: {
+                'prefixes': [prfx.name for prfx in country.prefixes],
+                'amin': country.area_min,
+                'amax': country.area_max
+            } for country in list(countries)
+        }
+
+    def get_tg_groups(self):
+        # tg_groups = self.session.query(TgGroup).filter(TgGroup.id>0).all()
+        return self.session.query(TgGroup).filter(TgGroup.id>0).all()
+        # return [
+        #     {
+        #         'name': tg_group.name,
+        #         'description': tg_group.description,
+        #         'members': [
+        #             (dmr.dmr_id, dmr.name, dmr.description)
+        #             for dmr in tg_group.members
+        #         ]
+        #     } for tg_group in tg_groups
+        # ]
+
+    def get_bands(self):
+        return self.session.query(Band).all()
+    
+    def get_modes(self):
+        return self.session.query(Mode).all()
+    
+    def get_channel_groups(self):
+        return self.session.query(ChannelGroup).all()
+
+
+
+if __name__ == '__main__':
+    from secret import DB_CREDENTIALS
+    from pprint import pprint
+    db = DB(DB_CREDENTIALS)
+    pprint(db.get_tg_groups())
