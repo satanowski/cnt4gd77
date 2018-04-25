@@ -24,6 +24,7 @@
     window.kab_mode = {% if kab_user %}true{% else %}false{% endif %};
 </script>
 
+<script src="{{ url_for('static', filename='babel_polyfill.js') }}"></script>
 <script src="{{ url_for('static', filename='main.js') }}"></script>
 <script async src="https://www.googletagmanager.com/gtag/js?id=UA-220058-16"></script>
 <script src="{{ url_for('static', filename='stuff.js') }}"></script>
